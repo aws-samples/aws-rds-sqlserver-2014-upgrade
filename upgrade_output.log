@@ -1,0 +1,273 @@
+Welcome to RDSUpgrade Tool
+
+2024-03-14 22:26:11
+                                                                                                            AWS SQL RDS INPLACE-UPGRADE                                                                                                            
+RDS Instance identifier rds2016saz
+RDS Instance AWS Region us-east-2
+RDS Instance target parameter group name test-upgrade-pg16
+RDS Instance target parameter group family sqlserver-se-16.0
+RDS Instance target option group name test-upgrade-og16
+RDS Instance target engine version 16.00.4095.4.v1
+
+Source Engine Major version: 
+16
+
+Tareget Engine Major Version MAZ:16
+
+Target Engine Name: sqlserver-se
+RDS MultiAZ: false
+Listener  endpoint: null
+Tareget Major Version 16.00
+Getting the source parameter group name from RDS instance
+test-upgrade-pg-sql22
+2024-03-14 22:27:45
+Getting the source option group name from RDS instance
+test-upgrade-ogsql22
+2024-03-14 22:27:49
+Custom ParameterGroup test-upgrade-pg-sql22 found on the source.
+Creating new parameter group test-upgrade-pg16 for target version
+2024-03-14 22:27:56
+Selecting only modified parameters from  the source
+Copying the modified parameters to the target
+2024-03-14 22:28:11
+Custom OptionGroup $source_db_option_group_name found on the source.
+Creating new Option group test-upgrade-og16 for target version
+2024-03-14 22:28:15
+Copying the options from the source option group to the target
+2024-03-14 22:28:28
+Performing In Place upgrade now
+2024-03-14 22:28:28
+{
+    "DBInstance": {
+        "DBInstanceIdentifier": "rds2016saz",
+        "DBInstanceClass": "db.m6i.xlarge",
+        "Engine": "sqlserver-se",
+        "DBInstanceStatus": "available",
+        "MasterUsername": "sasql",
+        "Endpoint": {
+            "Address": "rds2016saz.cvgupdj47zsh.us-east-2.rds.amazonaws.com",
+            "Port": 1433,
+            "HostedZoneId": "Z2XHWR1WZ565X2"
+        },
+        "AllocatedStorage": 20,
+        "InstanceCreateTime": "2024-03-14T11:38:14.341000+00:00",
+        "PreferredBackupWindow": "09:54-10:24",
+        "BackupRetentionPeriod": 7,
+        "DBSecurityGroups": [],
+        "VpcSecurityGroups": [
+            {
+                "VpcSecurityGroupId": "sg-0cbb5725c25664608",
+                "Status": "active"
+            },
+            {
+                "VpcSecurityGroupId": "sg-0971ecb45de060a75",
+                "Status": "active"
+            }
+        ],
+        "DBParameterGroups": [
+            {
+                "DBParameterGroupName": "test-upgrade-pg16",
+                "ParameterApplyStatus": "applying"
+            }
+        ],
+        "AvailabilityZone": "us-east-2a",
+        "DBSubnetGroup": {
+            "DBSubnetGroupName": "default",
+            "DBSubnetGroupDescription": "default",
+            "VpcId": "vpc-0ecdff1c4abd7592b",
+            "SubnetGroupStatus": "Complete",
+            "Subnets": [
+                {
+                    "SubnetIdentifier": "subnet-0af0742cb189961cc",
+                    "SubnetAvailabilityZone": {
+                        "Name": "us-east-2c"
+                    },
+                    "SubnetOutpost": {},
+                    "SubnetStatus": "Active"
+                },
+                {
+                    "SubnetIdentifier": "subnet-02d5a8fe9371d8ad2",
+                    "SubnetAvailabilityZone": {
+                        "Name": "us-east-2a"
+                    },
+                    "SubnetOutpost": {},
+                    "SubnetStatus": "Active"
+                },
+                {
+                    "SubnetIdentifier": "subnet-019226a4809cdccb6",
+                    "SubnetAvailabilityZone": {
+                        "Name": "us-east-2c"
+                    },
+                    "SubnetOutpost": {},
+                    "SubnetStatus": "Active"
+                },
+                {
+                    "SubnetIdentifier": "subnet-0b72a6cb14e9fdc24",
+                    "SubnetAvailabilityZone": {
+                        "Name": "us-east-2b"
+                    },
+                    "SubnetOutpost": {},
+                    "SubnetStatus": "Active"
+                },
+                {
+                    "SubnetIdentifier": "subnet-098ed3616c40df3f9",
+                    "SubnetAvailabilityZone": {
+                        "Name": "us-east-2b"
+                    },
+                    "SubnetOutpost": {},
+                    "SubnetStatus": "Active"
+                },
+                {
+                    "SubnetIdentifier": "subnet-07c813541c0ed5fb8",
+                    "SubnetAvailabilityZone": {
+                        "Name": "us-east-2a"
+                    },
+                    "SubnetOutpost": {},
+                    "SubnetStatus": "Active"
+                }
+            ]
+        },
+        "PreferredMaintenanceWindow": "mon:05:54-mon:06:24",
+        "PendingModifiedValues": {},
+        "LatestRestorableTime": "2024-03-15T02:22:01+00:00",
+        "MultiAZ": false,
+        "EngineVersion": "16.00.4095.4.v1",
+        "AutoMinorVersionUpgrade": false,
+        "ReadReplicaDBInstanceIdentifiers": [],
+        "LicenseModel": "license-included",
+        "Iops": 3000,
+        "OptionGroupMemberships": [
+            {
+                "OptionGroupName": "test-upgrade-og16",
+                "Status": "pending-apply"
+            },
+            {
+                "OptionGroupName": "test-upgrade-ogsql22",
+                "Status": "pending-removal"
+            }
+        ],
+        "CharacterSetName": "SQL_Latin1_General_CP1_CI_AS",
+        "PubliclyAccessible": false,
+        "StorageType": "gp3",
+        "DbInstancePort": 0,
+        "StorageEncrypted": true,
+        "KmsKeyId": "arn:aws:kms:us-east-2:153916273869:key/3d0da788-3eb8-4fe5-9165-921cda0283c9",
+        "DbiResourceId": "db-YIDXY4VGLDHAJLJAQCEJPYRQX4",
+        "CACertificateIdentifier": "rds-ca-rsa2048-g1",
+        "DomainMemberships": [
+            {
+                "Domain": "d-9a677082ec",
+                "Status": "joined",
+                "FQDN": "upgrade.com",
+                "IAMRoleName": "rds-directoryservice-access-role"
+            }
+        ],
+        "CopyTagsToSnapshot": true,
+        "MonitoringInterval": 60,
+        "EnhancedMonitoringResourceArn": "arn:aws:logs:us-east-2:153916273869:log-group:RDSOSMetrics:log-stream:db-YIDXY4VGLDHAJLJAQCEJPYRQX4",
+        "MonitoringRoleArn": "arn:aws:iam::153916273869:role/rds-monitoring-role",
+        "DBInstanceArn": "arn:aws:rds:us-east-2:153916273869:db:rds2016saz",
+        "IAMDatabaseAuthenticationEnabled": false,
+        "PerformanceInsightsEnabled": true,
+        "PerformanceInsightsKMSKeyId": "arn:aws:kms:us-east-2:153916273869:key/3d0da788-3eb8-4fe5-9165-921cda0283c9",
+        "PerformanceInsightsRetentionPeriod": 7,
+        "DeletionProtection": false,
+        "AssociatedRoles": [],
+        "TagList": [],
+        "CustomerOwnedIpEnabled": false,
+        "BackupTarget": "region"
+    }
+}
+Rebooting RDS instance
+Reboot is in progress . Please wait
+2024-03-14 22:28:45
+Reboot is in progress . Please wait
+2024-03-14 22:28:50
+Reboot is in progress . Please wait
+2024-03-14 22:28:54
+Reboot is in progress . Please wait
+2024-03-14 22:28:59
+Reboot is in progress . Please wait
+2024-03-14 22:29:03
+Reboot is in progress . Please wait
+2024-03-14 22:29:07
+Reboot is in progress . Please wait
+2024-03-14 22:29:12
+Reboot is in progress . Please wait
+2024-03-14 22:29:16
+Reboot is in progress . Please wait
+2024-03-14 22:29:21
+Reboot is in progress . Please wait
+2024-03-14 22:29:25
+Reboot is in progress . Please wait
+2024-03-14 22:29:30
+Reboot is in progress . Please wait
+2024-03-14 22:29:34
+Reboot is in progress . Please wait
+2024-03-14 22:29:39
+Reboot is in progress . Please wait
+2024-03-14 22:29:43
+Reboot is in progress . Please wait
+2024-03-14 22:29:48
+Reboot is in progress . Please wait
+2024-03-14 22:29:54
+Reboot is in progress . Please wait
+2024-03-14 22:29:59
+Reboot is in progress . Please wait
+2024-03-14 22:30:04
+Reboot is in progress . Please wait
+2024-03-14 22:30:09
+Reboot is in progress . Please wait
+2024-03-14 22:30:14
+Reboot is in progress . Please wait
+2024-03-14 22:30:18
+Reboot is in progress . Please wait
+2024-03-14 22:30:23
+Reboot is in progress . Please wait
+2024-03-14 22:30:28
+Reboot is in progress . Please wait
+2024-03-14 22:30:32
+Reboot is in progress . Please wait
+2024-03-14 22:30:37
+Reboot is in progress . Please wait
+2024-03-14 22:30:43
+Reboot is in progress . Please wait
+2024-03-14 22:30:48
+Reboot is in progress . Please wait
+2024-03-14 22:30:54
+Reboot is in progress . Please wait
+2024-03-14 22:30:59
+Reboot is in progress . Please wait
+2024-03-14 22:31:05
+Reboot is in progress . Please wait
+2024-03-14 22:31:10
+Reboot is in progress . Please wait
+2024-03-14 22:31:16
+Reboot is in progress . Please wait
+2024-03-14 22:31:22
+Reboot is in progress . Please wait
+2024-03-14 22:31:26
+Reboot is in progress . Please wait
+2024-03-14 22:31:32
+Reboot is in progress . Please wait
+2024-03-14 22:31:37
+Reboot is in progress . Please wait
+2024-03-14 22:31:44
+Reboot is in progress . Please wait
+2024-03-14 22:31:50
+Reboot is in progress . Please wait
+2024-03-14 22:31:55
+Reboot is in progress . Please wait
+2024-03-14 22:31:59
+Reboot is in progress . Please wait
+2024-03-14 22:32:03
+Reboot is in progress . Please wait
+2024-03-14 22:32:08
+Reboot is in progress . Please wait
+2024-03-14 22:32:12
+Reboot is in progress . Please wait
+2024-03-14 22:32:17
+Reboot is in progress . Please wait
+2024-03-14 22:32:21
+RDS instance's SQL Server Engine after upgrade
+[ "16.00.4095.4.v1 ]

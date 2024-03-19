@@ -1,93 +1,59 @@
 # SQLRDS2014Upgrade
+SQL RDS Upgrade from 2014 to higher version
+
+# What this Automation Tool does  ?
+
+When you go through the SQL RDS Major version In Place upgrade journey by following this https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.SQLServer.html , you will need to follow series of manual process in order to perform a successful in place upgrade. For example Copy paramter group,option group and there is no AWS CLI command to perform this task in a automated way.
+
+This process is a single-click deployment that will enable customers perform the task successfully with few user inputs.
+
+## Prerequisites
+- AWS CLI latest version
+- Python latest version
+- Source SQL RDS Instance to upgrade
+
+
+> **⚠️ Note**
+>
+>Tool will successfully run  only when compatabile and supported values are passed. For more information , refer to  :https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_SQLServer.html for more information 
+>
+>If you are trying to enable MultiAZ on RDS for SQL Server 2014 that has MSDTC Option enabled, this will fail since MultiAZ is not supported when MSDTC is enabled.
+>
+>If you have SSAS enabled on RDS for SQL Server 2014 , if you try to upgrade to on RDS for SQL Server 2022, this will fail as SSAS is not supported in on RDS for SQL Server 2022.
+>
+>If you have SSRS DB option enabled on the source RDS,make sure to provide permission on the SSRS Secrets's resource policy to the new Option Group name, that you will pass during the script execution (example : SQL-RDS-2022-OG) in Secrets manager. Only then SSRS copy will be successful. For more information, refer to https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.SQLServer.Options.SSRS.html>
+>
+>If you are running on SQL Server 2014 with MultiAZ  and trying to upgrade to SQL Server 2022 this will fail . As per upgrade path you need to either convert Multi AZ to SingleAZ first or upgrade to intermediate verison before upgrading to 2022. MultiAZ to SingleAZ conversion is not handled by this tool. Once you manually convert them you can rerun this tool.
+>
+>Make sure to evaluate and remove any paramters that are not needed in the upgraded version . This tool will copy all the parameters from source to target version.
+>
+>The scripts uses `py db_options.py` (line 157). If you are running from windows environment no changes required. If you are running from Linux environment ,python 3 is recommended.
+
+## How to Run this ?
+
+All you need to do is , execute this shell script `rds_upgrade.sh` and provide requested inputs. Take a break ! We will take care of the upgrade.
+
+## What does each file do ?
+
+- `rds_upgrade_2014.sh` This is the main file that need to be run for executing the upgrade. 
+- `db_options.py` This python file performs json parsing , creates an output that serve as input for option group and parameter group creation. 
+- `og_input.json` & `og_output.json` are used to create option group.
+- `source_pg.json` file is used to create parameter group.
 
 
 
-## Getting started
+## Sample input and output. 
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+source_db_instance_identifier="rds2014"
+region="us-east-2"
+target_db_parameter_group_name="test-upgrade-pg-sql22"
+target_db_parameter_group_family="sqlserver-se-16.0"
+target_option_group_name="test-upgrade-ogsql22"
+target_engine_version="16.00.4095.4.v1"
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Known Errors
 
-## Add your files
+While using custom option group, if no option was added on the source, below error will occur but the process will continue to run. 
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+>**⚠️ An error occurred (InvalidParameterValue) when calling the ModifyOptionGroup operation: At least one option must be added, modified, or removed.**
 
-```
-cd existing_repo
-git remote add origin https://gitlab.aws.dev/araharip/sqlrds2014upgrade.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.aws.dev/araharip/sqlrds2014upgrade/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
