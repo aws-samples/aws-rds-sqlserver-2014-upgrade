@@ -7,7 +7,27 @@ When you go through the SQL RDS Major version In Place upgrade journey by follow
 
 This process is a single-click deployment that will enable customers perform the task successfully with few user inputs.
 
-## Prerequisites
+
+# High level Steps
+
+- Check upgrade path
+- Create new parameter group for target version
+- Copy the parameters to target parameter group 
+- Create new option group for target version
+- Copy the options  to target option group
+- Perform Inplace upgrade of RDS instance attaching new parameter group and option group
+- Reboot the RDS instance
+
+# what is not covered ?
+
+When RDS is upgraded, all existing databases remain at their original database compatibility level. For example, RDS is upgraded from SQL Server 2014 to SQL Server 2016, all existing databases have a compatibility level of 120. Any new database created after the upgrade have compatibility level 130.
+You can change the compatibility level of a database by using the ALTER DATABASE command. For example, to change a database named customeracct to be compatible with SQL Server 2014, issue the following command:
+
+`ALTER DATABASE customeracct SET COMPATIBILITY_LEVEL = 120`
+            
+
+
+# Prerequisites
 - AWS CLI latest version
 - Python latest version
 - Source SQL RDS Instance to upgrade
@@ -27,7 +47,7 @@ This process is a single-click deployment that will enable customers perform the
 >
 >Make sure to evaluate and remove any paramters that are not needed in the upgraded version . This tool will copy all the parameters from source to target version.
 >
->The scripts uses `py db_options.py` (line 157). If you are running from windows environment no changes required. If you are running from Linux environment ,python 3 is recommended.
+>If you are on Linux environment,modify line 157 from `py db_options.py`  to `python db_options.py` for a successful run. If you are running from windows environment no changes required. 
 
 ## How to Run this ?
 
