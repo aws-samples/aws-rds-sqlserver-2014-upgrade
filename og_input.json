@@ -1,23 +1,111 @@
 [
     [
         {
-            "OptionName": "SQLSERVER_BACKUP_RESTORE",
-            "OptionDescription": "SQLServer Database Level Customer Backups and Restores",
+            "OptionName": "SSIS",
+            "OptionDescription": "Activates SQL Server Integration Services - SE 13",
             "Persistent": false,
             "Permanent": false,
+            "OptionSettings": [],
+            "DBSecurityGroupMemberships": [],
+            "VpcSecurityGroupMemberships": []
+        },
+        {
+            "OptionName": "SSRS",
+            "OptionDescription": "Activates SQL Server Reporting Services - SE 13",
+            "Persistent": false,
+            "Permanent": false,
+            "Port": 49151,
             "OptionSettings": [
                 {
-                    "Name": "IAM_ROLE_ARN",
-                    "Value": "arn:aws:iam::153916273869:role/rdsupgradetesting",
-                    "Description": "Specifies the IAM role ARN used by RDS to backup and restore to and from customer's S3 bucket(s)",
+                    "Name": "SMTP_USE_ANONYMOUS_AUTHENTICATION",
+                    "Value": "FALSE",
+                    "DefaultValue": "FALSE",
+                    "Description": "Flag for enabling anonymous connections for SSRS Email",
+                    "ApplyType": "DYNAMIC",
+                    "DataType": "BOOLEAN",
+                    "AllowedValues": "TRUE,FALSE",
+                    "IsModifiable": true,
+                    "IsCollection": false
+                },
+                {
+                    "Name": "SMTP_SERVER",
+                    "Value": "email-smtp.us-west-2.amazonaws.com",
+                    "Description": "SMTP server for SSRS Email",
                     "ApplyType": "DYNAMIC",
                     "DataType": "STRING",
+                    "IsModifiable": true,
+                    "IsCollection": false
+                },
+                {
+                    "Name": "SMTP_EMAIL_CREDENTIALS_SECRET_ARN",
+                    "Value": "arn:aws:secretsmanager:us-east-2:153916273869:secret:rcm-sqlserver-O1FYwT",
+                    "Description": "Secret ARN containing the SMTP credentials for SSRS Email",
+                    "ApplyType": "DYNAMIC",
+                    "DataType": "STRING",
+                    "IsModifiable": true,
+                    "IsCollection": false
+                },
+                {
+                    "Name": "SMTP_SENDER_EMAIL_ADDRESS",
+                    "Value": "araharip@amazon.com",
+                    "Description": "SMTP sender email address for SSRS Email",
+                    "ApplyType": "DYNAMIC",
+                    "DataType": "STRING",
+                    "IsModifiable": true,
+                    "IsCollection": false
+                },
+                {
+                    "Name": "SMTP_PORT",
+                    "Value": "25",
+                    "DefaultValue": "25",
+                    "Description": "SMTP port for SSRS Email",
+                    "ApplyType": "DYNAMIC",
+                    "DataType": "INTEGER",
+                    "AllowedValues": "1-65535",
+                    "IsModifiable": true,
+                    "IsCollection": false
+                },
+                {
+                    "Name": "MAX_MEMORY",
+                    "Value": "45",
+                    "DefaultValue": "30",
+                    "Description": "Maximum allowable memory of SSRS",
+                    "ApplyType": "DYNAMIC",
+                    "DataType": "INTEGER",
+                    "AllowedValues": "10-80",
+                    "IsModifiable": true,
+                    "IsCollection": false
+                },
+                {
+                    "Name": "SMTP_ENABLE_EMAIL",
+                    "Value": "TRUE",
+                    "DefaultValue": "FALSE",
+                    "Description": "Flag for enabling SSRS Email",
+                    "ApplyType": "DYNAMIC",
+                    "DataType": "BOOLEAN",
+                    "AllowedValues": "TRUE,FALSE",
+                    "IsModifiable": true,
+                    "IsCollection": false
+                },
+                {
+                    "Name": "SMTP_USE_SSL",
+                    "Value": "TRUE",
+                    "DefaultValue": "TRUE",
+                    "Description": "Flag for enabling SSL for SSRS Email",
+                    "ApplyType": "DYNAMIC",
+                    "DataType": "BOOLEAN",
+                    "AllowedValues": "TRUE,FALSE",
                     "IsModifiable": true,
                     "IsCollection": false
                 }
             ],
             "DBSecurityGroupMemberships": [],
-            "VpcSecurityGroupMemberships": []
+            "VpcSecurityGroupMemberships": [
+                {
+                    "VpcSecurityGroupId": "sg-02b33e887d41f4028",
+                    "Status": "active"
+                }
+            ]
         },
         {
             "OptionName": "SQLSERVER_AUDIT",
@@ -69,109 +157,21 @@
             "VpcSecurityGroupMemberships": []
         },
         {
-            "OptionName": "SSRS",
-            "OptionDescription": "Activates SQL Server Reporting Services - SE 16",
+            "OptionName": "SQLSERVER_BACKUP_RESTORE",
+            "OptionDescription": "SQLServer Database Level Customer Backups and Restores",
             "Persistent": false,
             "Permanent": false,
-            "Port": 49151,
             "OptionSettings": [
                 {
-                    "Name": "SMTP_USE_ANONYMOUS_AUTHENTICATION",
-                    "Value": "FALSE",
-                    "DefaultValue": "FALSE",
-                    "Description": "Flag for enabling anonymous connections for SSRS Email",
-                    "ApplyType": "DYNAMIC",
-                    "DataType": "BOOLEAN",
-                    "AllowedValues": "TRUE,FALSE",
-                    "IsModifiable": true,
-                    "IsCollection": false
-                },
-                {
-                    "Name": "MAX_MEMORY",
-                    "Value": "45",
-                    "DefaultValue": "30",
-                    "Description": "Maximum allowable memory of SSRS",
-                    "ApplyType": "DYNAMIC",
-                    "DataType": "INTEGER",
-                    "AllowedValues": "10-80",
-                    "IsModifiable": true,
-                    "IsCollection": false
-                },
-                {
-                    "Name": "SMTP_EMAIL_CREDENTIALS_SECRET_ARN",
-                    "Value": "arn:aws:secretsmanager:us-east-2:153916273869:secret:rcm-sqlserver-O1FYwT",
-                    "Description": "Secret ARN containing the SMTP credentials for SSRS Email",
+                    "Name": "IAM_ROLE_ARN",
+                    "Value": "arn:aws:iam::153916273869:role/rdsupgradetesting",
+                    "Description": "Specifies the IAM role ARN used by RDS to backup and restore to and from customer's S3 bucket(s)",
                     "ApplyType": "DYNAMIC",
                     "DataType": "STRING",
-                    "IsModifiable": true,
-                    "IsCollection": false
-                },
-                {
-                    "Name": "SMTP_SERVER",
-                    "Value": "email-smtp.us-west-2.amazonaws.com",
-                    "Description": "SMTP server for SSRS Email",
-                    "ApplyType": "DYNAMIC",
-                    "DataType": "STRING",
-                    "IsModifiable": true,
-                    "IsCollection": false
-                },
-                {
-                    "Name": "SMTP_ENABLE_EMAIL",
-                    "Value": "TRUE",
-                    "DefaultValue": "FALSE",
-                    "Description": "Flag for enabling SSRS Email",
-                    "ApplyType": "DYNAMIC",
-                    "DataType": "BOOLEAN",
-                    "AllowedValues": "TRUE,FALSE",
-                    "IsModifiable": true,
-                    "IsCollection": false
-                },
-                {
-                    "Name": "SMTP_SENDER_EMAIL_ADDRESS",
-                    "Value": "araharip@amazon.com",
-                    "Description": "SMTP sender email address for SSRS Email",
-                    "ApplyType": "DYNAMIC",
-                    "DataType": "STRING",
-                    "IsModifiable": true,
-                    "IsCollection": false
-                },
-                {
-                    "Name": "SMTP_PORT",
-                    "Value": "25",
-                    "DefaultValue": "25",
-                    "Description": "SMTP port for SSRS Email",
-                    "ApplyType": "DYNAMIC",
-                    "DataType": "INTEGER",
-                    "AllowedValues": "1-65535",
-                    "IsModifiable": true,
-                    "IsCollection": false
-                },
-                {
-                    "Name": "SMTP_USE_SSL",
-                    "Value": "TRUE",
-                    "DefaultValue": "TRUE",
-                    "Description": "Flag for enabling SSL for SSRS Email",
-                    "ApplyType": "DYNAMIC",
-                    "DataType": "BOOLEAN",
-                    "AllowedValues": "TRUE,FALSE",
                     "IsModifiable": true,
                     "IsCollection": false
                 }
             ],
-            "DBSecurityGroupMemberships": [],
-            "VpcSecurityGroupMemberships": [
-                {
-                    "VpcSecurityGroupId": "sg-02b33e887d41f4028",
-                    "Status": "active"
-                }
-            ]
-        },
-        {
-            "OptionName": "SSIS",
-            "OptionDescription": "Activates SQL Server Integration Services - SE 16",
-            "Persistent": false,
-            "Permanent": false,
-            "OptionSettings": [],
             "DBSecurityGroupMemberships": [],
             "VpcSecurityGroupMemberships": []
         }

@@ -8,7 +8,6 @@
         "DataType": "boolean",
         "AllowedValues": "0,1",
         "IsModifiable": true,
-        "MinimumEngineVersion": "16.00.4085.2.v1",
         "ApplyMethod": "immediate"
     },
     {
@@ -20,7 +19,6 @@
         "DataType": "boolean",
         "AllowedValues": "0,1",
         "IsModifiable": true,
-        "MinimumEngineVersion": "16.00.4085.2.v1",
         "ApplyMethod": "pending-reboot"
     },
     {
@@ -32,7 +30,6 @@
         "DataType": "boolean",
         "AllowedValues": "0,1",
         "IsModifiable": true,
-        "MinimumEngineVersion": "16.00.4085.2.v1",
         "ApplyMethod": "immediate"
     },
     {
@@ -44,7 +41,6 @@
         "DataType": "integer",
         "AllowedValues": "0-100",
         "IsModifiable": true,
-        "MinimumEngineVersion": "16.00.4085.2.v1",
         "ApplyMethod": "pending-reboot"
     },
     {
@@ -56,7 +52,6 @@
         "DataType": "integer",
         "AllowedValues": "0-2",
         "IsModifiable": true,
-        "MinimumEngineVersion": "16.00.4085.2.v1",
         "ApplyMethod": "immediate"
     },
     {
@@ -68,7 +63,6 @@
         "DataType": "integer",
         "AllowedValues": "0-64",
         "IsModifiable": true,
-        "MinimumEngineVersion": "16.00.4085.2.v1",
         "ApplyMethod": "immediate"
     },
     {
@@ -80,7 +74,6 @@
         "DataType": "integer",
         "AllowedValues": "0,40-32767",
         "IsModifiable": true,
-        "MinimumEngineVersion": "16.00.4085.2.v1",
         "ApplyMethod": "pending-reboot"
     }
 ]
