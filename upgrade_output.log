@@ -1,50 +1,23 @@
 Welcome to RDSUpgrade Tool
 
-2024-03-21 14:24:43
+2024-03-29 13:21:52
                                                                                      AWS SQL RDS INPLACE-UPGRADE                                                                                     
-RDS Instance identifier sql2016-maz
+RDS Instance identifier database-2
 RDS Instance AWS Region us-east-2
-RDS Instance target parameter group name 
-RDS Instance target parameter group family sqlserver-se-15.0
-RDS Instance target option group name 
-RDS Instance target engine version 15.00.4345.5.v1
+RDS Instance target parameter group name test-upgrade-pg-sql222
+RDS Instance target parameter group family sqlserver-se-16.0
+RDS Instance target option group name test-upgrade-ogsql222
+RDS Instance target engine version 16.00.4095.4.v1
 
 Source Engine Major version: 
-13
+15
 
-Tareget Engine Major Version MAZ:15
+Tareget Engine Major Version MAZ:16
 
 Target Engine Name: sqlserver-se
 RDS MultiAZ: true
 Listener  endpoint: null
-Tareget Major Version 15.00
-Getting the source parameter group name from RDS instance
-sql-stand-16
-2024-03-21 14:25:34
-Getting the source option group name from RDS instance
-sql-stand-16
-2024-03-21 14:25:37
-Custom ParameterGroup sql-stand-16 found on the source.
-Creating new parameter group  for target version
-2024-03-21 14:25:39
-Selecting only modified parameters from  the source
-Copying the modified parameters to the target
-2024-03-21 14:25:43
-Custom OptionGroup $source_db_option_group_name found on the source.
-Creating new Option group  for target version
-2024-03-21 14:25:45
-Copying the options from the source option group to the target
-2024-03-21 14:25:50
-Performing In Place upgrade now
-2024-03-21 14:25:50
-Rebooting RDS instance
-Reboot is in progress . Please wait
-2024-03-21 14:27:37
-Reboot is in progress . Please wait
-2024-03-21 14:28:39
-Reboot is in progress . Please wait
-2024-03-21 14:29:42
-RDS instance's SQL Server Engine after upgrade
-[ "13.00.6300.2.v1 ]
+Tareget Major Version 16.00
+Target Major Engine version  is 16.00 ,SQL Server 2022. As per the upgrade path to SQL Server 2022, MultiAZ should be converted to SingleAZ first. Please convert that in the console and rerun this tool
 Execution time in HH MM SS
-0 6 3
+0 1 9

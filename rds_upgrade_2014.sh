@@ -2,29 +2,11 @@
 #Version 1
 #Date : 03/04/2024
 
-
 rm -f upgrade_output.log
 echo -e "Welcome to RDSUpgrade Tool\n">>upgrade_output.log
 date '+%Y-%m-%d %H:%M:%S' >>upgrade_output.log
 start=`date +%s`
 
-
-source_db_instance_identifier='sql2016-maz'
-region='us-east-2'
-source_db_parameter_group_name=''
-source_engineversion=''
-source_db_parameter_group_family=''
-source_engineversion=''
-target_db_parameter_group_name='test-upgrade-pg16'
-target_db_parameter_group_family='sqlserver-se-16.0'
-target_option_group_name='test-upgrade-og16'
-target_engine_name='sqlserver-se'
-target_major_engine_version='16.00'
-target_engine_version='16.00.4095.4.v1'
-low_mzvalue_true="true"
-low_mzvalue_false="false"
-
-: <<'END_COMMENT'
 
 echo ----------------------------------------------------------------------------------------------------------------------------------------------------
 echo ----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -46,7 +28,7 @@ echo "Enter Source RDS Instance AWS Region"
 read region
 echo -e "RDS Instance AWS Region $region">>upgrade_output.log
 
-echo "Enter RDS Instance target parameter group name if you are using custom parameter. If you are using default just hit enter"
+echo "Enter RDS Instance target parameter group name to use custom parameter group . To use default , enter 'na'"
 read target_db_parameter_group_name
 echo -e "RDS Instance target parameter group name $target_db_parameter_group_name">>upgrade_output.log
 
@@ -54,7 +36,7 @@ echo "Enter RDS Instance target parameter group family(Example:sqlserver-se-15.0
 read target_db_parameter_group_family
 echo -e "RDS Instance target parameter group family $target_db_parameter_group_family">>upgrade_output.log
 
-echo "Enter RDS Instance target option group name if you are using custom option group. If you are using default just hit enter"
+echo "Enter RDS Instance target option group name to use custom option group. To use default , enter 'na'"
 read target_option_group_name
 echo -e "RDS Instance target option group name $target_option_group_name">>upgrade_output.log
 
@@ -62,7 +44,7 @@ echo "Enter RDS Instance target engine version(Example:15.00.4345.5.v1)"
 read target_engine_version
 echo -e "RDS Instance target engine version $target_engine_version">>upgrade_output.log
 
-END_COMMENT
+echo "Kindly monitor upgrade_output.log for more verbose logging"
 
 sql2014=12
 sql2016=13
@@ -87,9 +69,9 @@ echo "Listener  endpoint: $lis_endpoint">>upgrade_output.log
 echo "Tareget Major Version $target_major_engine_version">>upgrade_output.log
 
 
-
 if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engine_version_maz -eq 16) ]]; then   
-    echo "Target Major Engine version  is $target_major_engine_version ,SQL Server 2022. As per the upgrade path to SQL Server 2022, MultiAZ should be converted to SingleAZ first.Please convert that in the console and rerun this tool"
+    echo "Target Major Engine version  is $target_major_engine_version ,SQL Server 2022. As per the upgrade path to SQL Server 2022, MultiAZ should be converted to SingleAZ first. Please convert that in the console and rerun this tool"
+    echo "Target Major Engine version  is $target_major_engine_version ,SQL Server 2022. As per the upgrade path to SQL Server 2022, MultiAZ should be converted to SingleAZ first. Please convert that in the console and rerun this tool">>upgrade_output.log
     break
     else
     echo "Configuration looks good for the upgrade path. Continuing the process....!"
@@ -98,12 +80,14 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
     ##############################################################################################################################################################################################################################################
 
     echo Getting the source parameter group name from RDS instance>>upgrade_output.log 
+    echo "Getting the source parameter group name from RDS instance"
     source_db_parameter_group_name=`aws rds describe-db-instances --db-instance-identifier $source_db_instance_identifier --region $region --query 'DBInstances[*].DBParameterGroups[].DBParameterGroupName|[0]'`
     source_db_parameter_group_name=`sed -e 's/^"//' -e 's/"$//' <<<"$source_db_parameter_group_name"`
     echo $source_db_parameter_group_name>>upgrade_output.log 
     date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log 
 
     echo Getting the source option group name from RDS instance>>upgrade_output.log 
+    echo "Getting the source option group name from RDS instance"
     source_db_option_group_name=`aws rds describe-db-instances --db-instance-identifier $source_db_instance_identifier --region $region  --query 'DBInstances[*].OptionGroupMemberships[].OptionGroupName|[0]'`
     source_db_option_group_name=`sed -e 's/^"//' -e 's/"$//' <<<"$source_db_option_group_name"`
     echo $source_db_option_group_name>>upgrade_output.log 
@@ -111,10 +95,15 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
 
     default_pg='(default.)' 
 
-    if [[ $source_db_parameter_group_name =~ $default_pg ]]; then
-        echo 'Default ParameterGroup found on the source. No new ParameterGroup will be created. Continuing..'>>upgrade_output.log 
-        else 
-        echo "Custom ParameterGroup $source_db_parameter_group_name found on the source.">>upgrade_output.log
+
+    if [[ (($source_db_parameter_group_name =~ $default_pg) && ($target_db_parameter_group_name =~ (na))) ]]; then
+        echo 'Default ParameterGroup found on the source. Default parametergroup requested for upgrade. Continuing with Default paramtergroup..'>>upgrade_output.log
+        date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
+        elif [[ (("$source_db_parameter_group_name" != "$default_pg")) && ($target_db_parameter_group_name =~ (na)) ]]; then
+        date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
+        echo 'Custom ParameterGroup found on the source. But Default parametergroup requested for upgrade. Continuing with Default paramtergroup.'>>upgrade_output.log 
+        elif [[ (($source_db_parameter_group_name =~ $default_pg) && ("$target_db_parameter_group_name" != "na")) ]]; then
+        echo "Default ParameterGroup found on the source. But Custom parametergroup requested for upgrade. Continuing with Custom paramtergroup.">>upgrade_output.log
         echo "Creating new parameter group $target_db_parameter_group_name for target version">>upgrade_output.log
         aws rds create-db-parameter-group  --db-parameter-group-name $target_db_parameter_group_name  --region $region --db-parameter-group-family $target_db_parameter_group_family --description 'SQL RDS Upgrade ParameterGroup'>>upgrade_output.log
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
@@ -123,24 +112,54 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
         echo "Copying the modified parameters to the target">>upgrade_output.log
         aws rds modify-db-parameter-group --db-parameter-group-name $target_db_parameter_group_name --region $region --parameters file://source_pg.json
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
+        else 
+        echo "Custom ParameterGroup found on the source. Custom parametergroup requested for upgrade.Continuing with Custom paramtergroup.'>>upgrade_output.log.">>upgrade_output.log
+        echo "Creating new parameter group $target_db_parameter_group_name for target version">>upgrade_output.log
+        aws rds create-db-parameter-group  --db-parameter-group-name $target_db_parameter_group_name  --region $region --db-parameter-group-family $target_db_parameter_group_family --description 'SQL RDS Upgrade ParameterGroup'>>upgrade_output.log
+        date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
+        echo "Selecting only modified parameters from  the source">>upgrade_output.log
+        aws rds describe-db-parameters --db-parameter-group-name $source_db_parameter_group_name --region $region  --query "Parameters[?Source=='user']" --output json>source_pg.json
+        echo "Copying the modified parameters to the target">>upgrade_output.log
+        aws rds modify-db-parameter-group --db-parameter-group-name $target_db_parameter_group_name --region $region --parameters file://source_pg.json
+        date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log        
     fi
+
 
     default_og='(default.)'
 
-    if [[ $source_option_group_name =~ $default_og ]]; then
-        echo 'Default OptionGroup found on the source. No new OptionGroup will be created. Continuing..'>>upgrade_output.log
-        else 
-        echo 'Custom OptionGroup $source_db_option_group_name found on the source.'>>upgrade_output.log
+    if [[ (($source_option_group_name =~ $default_og) && ($target_option_group_name =~ (na))) ]]; then
+        echo 'Default OptionGroup found on the source. Default OptionGroup requested for upgrade.Continuing with Default OptionGroup..'>>upgrade_output.log
+        date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
+        elif [[ (("$source_option_group_name" != "$default_og")) && ($target_option_group_name =~ (na)) ]]; then
+        date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
+        echo 'Custom OptionGroup found on the source. But Default OptionGroup requested for upgrade.Continuing with Default OptionGroup.'>>upgrade_output.log 
+        elif [[ (($source_option_group_name =~ $default_og) && ("$target_option_group_name" != "na")) ]]; then
+        echo "Default OptionGroup $source_db_option_group_name found on the source.But Custom Optiongroup requested for upgrade.Continuing with Custom Optiongroup.">>upgrade_output.log
         echo "Creating new Option group $target_option_group_name for target version">>upgrade_output.log
         aws rds create-option-group  --option-group-name $target_option_group_name  --region $region  --engine-name $target_engine_name --major-engine-version $target_major_engine_version --option-group-description 'SQL RDS Upgrade optionGroup'>>upgrade_output.log
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log  
         echo "Copying the options from the source option group to the target">>upgrade_output.log
+        echo "If you have SSRS option enabled in source,Make sure to provide permission for the new option group in SSRS Secrets's resource policy.Look into Readme for more details"
+        aws rds describe-option-groups --option-group-name $source_db_option_group_name --region $region  --query "OptionGroupsList[*].Options">og_input.json
+        py db_options.py
+        aws rds add-option-to-option-group --option-group-name $target_option_group_name --region $region --options file://og_output.json>>upgrade_output.log
+        date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
+        else
+        echo "Default OptionGroup $source_db_option_group_name found on the source.But Custom Optiongroup requested for upgrade.Continuing with Custom Optiongroup.">>upgrade_output.log
+        echo "Creating new Option group $target_option_group_name for target version">>upgrade_output.log
+        aws rds create-option-group  --option-group-name $target_option_group_name  --region $region  --engine-name $target_engine_name --major-engine-version $target_major_engine_version --option-group-description 'SQL RDS Upgrade optionGroup'>>upgrade_output.log
+        date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log  
+        echo "Copying the options from the source option group to the target">>upgrade_output.log
+        echo "If you have SSRS option enabled in source,Make sure to provide permission for the new option group in SSRS Secrets's resource policy.Look into Readme for more details"
         aws rds describe-option-groups --option-group-name $source_db_option_group_name --region $region  --query "OptionGroupsList[*].Options">og_input.json
         py db_options.py
         aws rds add-option-to-option-group --option-group-name $target_option_group_name --region $region --options file://og_output.json>>upgrade_output.log
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
 
     fi
+
+
+
     ##############################################################################################################################################################################################################################################
     ##InPlace Upgrade 
     ##############################################################################################################################################################################################################################################
@@ -163,9 +182,10 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
         fi
     done
     aws rds   modify-db-instance --db-instance-identifier $source_db_instance_identifier --region $region --engine-version $target_engine_version --db-parameter-group-name $target_db_parameter_group_name  --option-group-name $target_option_group_name --allow-major-version-upgrade --apply-immediately>>upgrade_output.log
+    echo "Upgrade initiated . Please wait"
     while true;
     do
-        sleep 30
+        sleep 60
         dbstatus=$(aws rds describe-db-instances --db-instance-identifier $source_db_instance_identifier --region $region --query 'DBInstances[*].DBInstanceStatus|[0]')
         dbstatus=`sed -e 's/^"//' -e 's/"$//' <<<"$dbstatus"`
         if [ ${dbstatus} == "available" ];then
@@ -179,6 +199,7 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
     done
     echo "Rebooting RDS instance">>upgrade_output.log
     aws rds reboot-db-instance --db-instance-identifier $source_db_instance_identifier --region $region>>/dev/null
+    echo "Reboot initiated . Please wait"
     while true;
     do
         sleep 30
@@ -196,13 +217,11 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
 
     echo "RDS instance's SQL Server Engine after upgrade">>upgrade_output.log 
     source_engineversion=`aws rds describe-db-instances --db-instance-identifier $source_db_instance_identifier --region $region --query 'DBInstances[*].EngineVersion'`
-    source_engineversion=`sed -e 's/^"//' -e 's/"$//' <<<"$source_engineversion"`
     echo $source_engineversion>>upgrade_output.log 
-
+fi
 
     end=`date +%s`
     expr=$((end-start))
     echo 'Execution time in HH MM SS' >>upgrade_output.log
     echo $((expr/3600)) $((expr%3600/60)) $((expr%60))>>upgrade_output.log
-fi
 
