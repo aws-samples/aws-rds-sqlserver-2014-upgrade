@@ -1,0 +1,21 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "VisualEditor0",
+			"Effect": "Allow",
+			"Action": [
+				"rds:CreateDBParameterGroup",
+				"rds:ModifyOptionGroup",
+				"rds:ModifyDBParameterGroup",
+				"rds:CreateDBSnapshot",
+				"rds:ModifyDBClusterParameterGroup",
+				"rds:ModifyDBInstance",
+				"rds:ModifyDBCluster",
+				"rds:CreateDBClusterParameterGroup",
+				"rds:CreateOptionGroup"
+			],
+			"Resource": "*"
+		}
+	]
+}
