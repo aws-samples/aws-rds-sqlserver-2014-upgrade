@@ -1,1 +1,79 @@
-[]
+[
+    {
+        "ParameterName": "1204",
+        "ParameterValue": "1",
+        "Description": "Returns the resources and types of locks participating in a deadlock and also the current command affected.",
+        "Source": "user",
+        "ApplyType": "dynamic",
+        "DataType": "boolean",
+        "AllowedValues": "0,1",
+        "IsModifiable": true,
+        "ApplyMethod": "immediate"
+    },
+    {
+        "ParameterName": "c2 audit mode",
+        "ParameterValue": "1",
+        "Description": "Enable C2 auditing",
+        "Source": "user",
+        "ApplyType": "static",
+        "DataType": "boolean",
+        "AllowedValues": "0,1",
+        "IsModifiable": true,
+        "ApplyMethod": "pending-reboot"
+    },
+    {
+        "ParameterName": "clr enabled",
+        "ParameterValue": "1",
+        "Description": "Whether assemblies can be run by SQL Server",
+        "Source": "user",
+        "ApplyType": "dynamic",
+        "DataType": "boolean",
+        "AllowedValues": "0,1",
+        "IsModifiable": true,
+        "ApplyMethod": "immediate"
+    },
+    {
+        "ParameterName": "fill factor (%)",
+        "ParameterValue": "10",
+        "Description": "Server-wide default fill-factor value",
+        "Source": "user",
+        "ApplyType": "static",
+        "DataType": "integer",
+        "AllowedValues": "0-100",
+        "IsModifiable": true,
+        "ApplyMethod": "pending-reboot"
+    },
+    {
+        "ParameterName": "in-doubt xact resolution",
+        "ParameterValue": "1",
+        "Description": "Control default outcome of transactions that the Microsoft Distributed Transaction Coordinator (MS DTC) is unable to resolve",
+        "Source": "user",
+        "ApplyType": "dynamic",
+        "DataType": "integer",
+        "AllowedValues": "0-2",
+        "IsModifiable": true,
+        "ApplyMethod": "immediate"
+    },
+    {
+        "ParameterName": "max degree of parallelism",
+        "ParameterValue": "6",
+        "Description": "Number of processors to use in a parallel plan execution",
+        "Source": "user",
+        "ApplyType": "dynamic",
+        "DataType": "integer",
+        "AllowedValues": "0-64",
+        "IsModifiable": true,
+        "ApplyMethod": "immediate"
+    },
+    {
+        "ParameterName": "user connections",
+        "ParameterValue": "50",
+        "Description": "Maximum number of simultaneous user connections. Please note that the service may use up to 40 connections for system maintenance.",
+        "Source": "user",
+        "ApplyType": "static",
+        "DataType": "integer",
+        "AllowedValues": "0,40-32767",
+        "IsModifiable": true,
+        "ApplyMethod": "pending-reboot"
+    }
+]

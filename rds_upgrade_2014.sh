@@ -28,7 +28,7 @@ echo "Enter Source RDS Instance AWS Region"
 read region
 echo -e "RDS Instance AWS Region $region">>upgrade_output.log
 
-echo "Enter RDS Instance target parameter group name to use custom parameter group . To use default , enter 'na'"
+echo "Enter RDS Instance target parameter group name to use custom parameter group . To use default , enter 'default'"
 read target_db_parameter_group_name
 echo -e "RDS Instance target parameter group name $target_db_parameter_group_name">>upgrade_output.log
 
@@ -36,7 +36,7 @@ echo "Enter RDS Instance target parameter group family(Example:sqlserver-se-15.0
 read target_db_parameter_group_family
 echo -e "RDS Instance target parameter group family $target_db_parameter_group_family">>upgrade_output.log
 
-echo "Enter RDS Instance target option group name to use custom option group. To use default , enter 'na'"
+echo "Enter RDS Instance target option group name to use custom option group. To use default , enter 'default'"
 read target_option_group_name
 echo -e "RDS Instance target option group name $target_option_group_name">>upgrade_output.log
 
@@ -61,6 +61,10 @@ target_major_engine_version_maz=${target_major_engine_version_maz_temp:0:2}
 echo -e "\nSource Engine Major version: $source_engineversion">>upgrade_output.log
 echo -e "\nTareget Engine Major Version MAZ:$target_major_engine_version_maz">>upgrade_output.log
 echo -e "\nTarget Engine Name: $target_engine_name">>upgrade_output.log
+
+
+
+
 
 multiaz=`aws rds describe-db-instances --db-instance-identifier $source_db_instance_identifier --region $region --query 'DBInstances[*].MultiAZ|[0]'`
 echo "RDS MultiAZ: $multiaz">>upgrade_output.log
@@ -94,15 +98,20 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
     date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log 
 
     default_pg='(default.)' 
+    build_default_pg='default.'  
+    build_default_og_start='default:'  
+    build_default_og_end='-00'
 
 
-    if [[ (($source_db_parameter_group_name =~ $default_pg) && ($target_db_parameter_group_name =~ (na))) ]]; then
+
+
+    if [[ (($source_db_parameter_group_name =~ $default_pg) && ($target_db_parameter_group_name =~ (default))) ]]; then
         echo 'Default ParameterGroup found on the source. Default parametergroup requested for upgrade. Continuing with Default paramtergroup..'>>upgrade_output.log
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
-        elif [[ (("$source_db_parameter_group_name" != "$default_pg")) && ($target_db_parameter_group_name =~ (na)) ]]; then
+        elif [[ (("$source_db_parameter_group_name" != "$default_pg")) && ($target_db_parameter_group_name =~ (default)) ]]; then
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
         echo 'Custom ParameterGroup found on the source. But Default parametergroup requested for upgrade. Continuing with Default paramtergroup.'>>upgrade_output.log 
-        elif [[ (($source_db_parameter_group_name =~ $default_pg) && ("$target_db_parameter_group_name" != "na")) ]]; then
+        elif [[ (($source_db_parameter_group_name =~ $default_pg) && ("$target_db_parameter_group_name" != "default")) ]]; then
         echo "Default ParameterGroup found on the source. But Custom parametergroup requested for upgrade. Continuing with Custom paramtergroup.">>upgrade_output.log
         echo "Creating new parameter group $target_db_parameter_group_name for target version">>upgrade_output.log
         aws rds create-db-parameter-group  --db-parameter-group-name $target_db_parameter_group_name  --region $region --db-parameter-group-family $target_db_parameter_group_family --description 'SQL RDS Upgrade ParameterGroup'>>upgrade_output.log
@@ -127,13 +136,13 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
 
     default_og='(default.)'
 
-    if [[ (($source_option_group_name =~ $default_og) && ($target_option_group_name =~ (na))) ]]; then
+    if [[ (($source_option_group_name =~ $default_og) && ($target_option_group_name =~ (default))) ]]; then
         echo 'Default OptionGroup found on the source. Default OptionGroup requested for upgrade.Continuing with Default OptionGroup..'>>upgrade_output.log
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
-        elif [[ (("$source_option_group_name" != "$default_og")) && ($target_option_group_name =~ (na)) ]]; then
+        elif [[ (("$source_option_group_name" != "$default_og")) && ($target_option_group_name =~ (default)) ]]; then
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
-        echo 'Custom OptionGroup found on the source. But Default OptionGroup requested for upgrade.Continuing with Default OptionGroup.'>>upgrade_output.log 
-        elif [[ (($source_option_group_name =~ $default_og) && ("$target_option_group_name" != "na")) ]]; then
+        echo 'Custom OptionGroup found on the source. But Default OptionGroup requested for upgrade. Continuing with Default OptionGroup.'>>upgrade_output.log 
+        elif [[ (($source_option_group_name =~ $default_og) && ("$target_option_group_name" != "default")) ]]; then
         echo "Default OptionGroup $source_db_option_group_name found on the source.But Custom Optiongroup requested for upgrade.Continuing with Custom Optiongroup.">>upgrade_output.log
         echo "Creating new Option group $target_option_group_name for target version">>upgrade_output.log
         aws rds create-option-group  --option-group-name $target_option_group_name  --region $region  --engine-name $target_engine_name --major-engine-version $target_major_engine_version --option-group-description 'SQL RDS Upgrade optionGroup'>>upgrade_output.log
@@ -163,7 +172,7 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
     ##############################################################################################################################################################################################################################################
     ##InPlace Upgrade 
     ##############################################################################################################################################################################################################################################
-
+   
 
     echo "Performing In Place upgrade now">>upgrade_output.log
     date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
@@ -181,22 +190,89 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
                 sleep 30
         fi
     done
-    aws rds   modify-db-instance --db-instance-identifier $source_db_instance_identifier --region $region --engine-version $target_engine_version --db-parameter-group-name $target_db_parameter_group_name  --option-group-name $target_option_group_name --allow-major-version-upgrade --apply-immediately>>upgrade_output.log
-    echo "Upgrade initiated . Please wait"
-    while true;
-    do
-        sleep 60
-        dbstatus=$(aws rds describe-db-instances --db-instance-identifier $source_db_instance_identifier --region $region --query 'DBInstances[*].DBInstanceStatus|[0]')
-        dbstatus=`sed -e 's/^"//' -e 's/"$//' <<<"$dbstatus"`
-        if [ ${dbstatus} == "available" ];then
-            break;
+
+    if [[ (("$target_db_parameter_group_name" =~ (default))) && ("$target_option_group_name" =~ (default)) ]]; then
+        target_db_parameter_group_name=$build_default_pg$target_db_parameter_group_family
+        target_option_group_name_build1=$build_default_og_start$target_db_parameter_group_family
+        target_option_group_name_build1=${target_option_group_name_build1:0:23}
+        target_option_group_name=$target_option_group_name_build1$build_default_og_end
+        echo "Currently in default target parameter and default option group loop ">>upgrade_output.log
+        aws rds   modify-db-instance --db-instance-identifier $source_db_instance_identifier --region $region --engine-version $target_engine_version --db-parameter-group-name $target_db_parameter_group_name  --option-group-name $target_option_group_name --allow-major-version-upgrade --apply-immediately>>upgrade_output.log
+        echo "Upgrade initiated . Please wait"
+        while true;
+        do
+            sleep 60
+            dbstatus=$(aws rds describe-db-instances --db-instance-identifier $source_db_instance_identifier --region $region --query 'DBInstances[*].DBInstanceStatus|[0]')
+            dbstatus=`sed -e 's/^"//' -e 's/"$//' <<<"$dbstatus"`
+            if [ ${dbstatus} == "available" ];then
+                break;
+            else
+                echo "Upgrade is in progress . Please wait">>upgrade_output.log
+                echo "Upgrade is in progress . Please wait"
+                date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
+                sleep 30
+            fi
+        done
+        elif [[ (("$target_db_parameter_group_name" != "default")) && ($target_option_group_name =~ (default)) ]]; then
+        target_option_group_name_build1=$build_default_og_start$target_db_parameter_group_family
+        target_option_group_name_build1=${target_option_group_name_build1:0:23}
+        target_option_group_name=$target_option_group_name_build1$build_default_og_end
+        echo "Currently in custom target parameter and default option group loop ">>upgrade_output.log
+        aws rds   modify-db-instance --db-instance-identifier $source_db_instance_identifier --region $region --engine-version $target_engine_version --db-parameter-group-name $target_db_parameter_group_name  --option-group-name $target_option_group_name --allow-major-version-upgrade --apply-immediately>>upgrade_output.log
+        echo "Upgrade initiated . Please wait"
+        while true;
+        do
+            sleep 60
+            dbstatus=$(aws rds describe-db-instances --db-instance-identifier $source_db_instance_identifier --region $region --query 'DBInstances[*].DBInstanceStatus|[0]')
+            dbstatus=`sed -e 's/^"//' -e 's/"$//' <<<"$dbstatus"`
+            if [ ${dbstatus} == "available" ];then
+                break;
+            else
+                echo "Upgrade is in progress . Please wait">>upgrade_output.log
+                echo "Upgrade is in progress . Please wait"
+                date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
+                sleep 30
+            fi
+        done
+        elif [[ (($target_db_parameter_group_name =~ (default)) && ("$target_option_group_name" != "default")) ]]; then
+        target_db_parameter_group_name=$build_default_pg$target_db_parameter_group_family        
+        echo "Currently in default target parameter and custom option group loop ">>upgrade_output.log
+        aws rds   modify-db-instance --db-instance-identifier $source_db_instance_identifier --region $region --engine-version $target_engine_version --db-parameter-group-name $target_db_parameter_group_name  --option-group-name $target_option_group_name --allow-major-version-upgrade --apply-immediately>>upgrade_output.log
+        echo "Upgrade initiated . Please wait"
+        while true;
+        do
+            sleep 60
+            dbstatus=$(aws rds describe-db-instances --db-instance-identifier $source_db_instance_identifier --region $region --query 'DBInstances[*].DBInstanceStatus|[0]')
+            dbstatus=`sed -e 's/^"//' -e 's/"$//' <<<"$dbstatus"`
+            if [ ${dbstatus} == "available" ];then
+                break;
+            else
+                echo "Upgrade is in progress . Please wait">>upgrade_output.log
+                echo "Upgrade is in progress . Please wait"
+                date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
+                sleep 30
+            fi
+        done
         else
-            echo "Upgrade is in progress . Please wait">>upgrade_output.log
-            echo "Upgrade is in progress . Please wait"
-            date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
-            sleep 30
-        fi
-    done
+        echo "Currently in custom target parameter and custom option group loop ">>upgrade_output.log
+        aws rds   modify-db-instance --db-instance-identifier $source_db_instance_identifier --region $region --engine-version $target_engine_version --db-parameter-group-name $target_db_parameter_group_name  --option-group-name $target_option_group_name --allow-major-version-upgrade --apply-immediately>>upgrade_output.log
+        echo "Upgrade initiated . Please wait"
+        while true;
+        do
+            sleep 60
+            dbstatus=$(aws rds describe-db-instances --db-instance-identifier $source_db_instance_identifier --region $region --query 'DBInstances[*].DBInstanceStatus|[0]')
+            dbstatus=`sed -e 's/^"//' -e 's/"$//' <<<"$dbstatus"`
+            if [ ${dbstatus} == "available" ];then
+                break;
+            else
+                echo "Upgrade is in progress . Please wait">>upgrade_output.log
+                echo "Upgrade is in progress . Please wait"
+                date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
+                sleep 30
+            fi
+        done     
+    fi
+
     echo "Rebooting RDS instance">>upgrade_output.log
     aws rds reboot-db-instance --db-instance-identifier $source_db_instance_identifier --region $region>>/dev/null
     echo "Reboot initiated . Please wait"

@@ -3,7 +3,7 @@ SQL RDS Upgrade from 2014 to higher version
 
 # What this Automation Tool does  ?
 
-When you go through the SQL RDS Major version In Place upgrade journey by following this https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.SQLServer.html , you will need to follow series of manual process in order to perform a successful in place upgrade. For example Copy paramter group,option group and there is no AWS CLI command to perform this task in a automated way.
+When you go through the SQL RDS Major version In Place upgrade journey by following [Major Version Upgrade](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.SQLServer.html) , you will need to follow series of manual process in order to perform a successful in place upgrade. For example Copy paramter group,option group and there is no AWS CLI command to perform this task in a automated way.
 
 This process is a single-click deployment that will enable customers perform the task successfully with few user inputs.
 
@@ -35,13 +35,13 @@ You can change the compatibility level of a database by using the ALTER DATABASE
 
 > **⚠️ Note**
 >
->Tool will successfully run  only when compatabile and supported values are passed. For more information , refer to  :https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_SQLServer.html for more information 
+>Tool will successfully run  only when compatabile and supported values are passed. For more information , refer to [Amazon RDS for Microsoft SQL Server](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_SQLServer.html) for more information 
 >
 >If you are trying to enable MultiAZ on RDS for SQL Server 2014 that has MSDTC Option enabled, this will fail since MultiAZ is not supported when MSDTC is enabled.
 >
 >If you have SSAS enabled on RDS for SQL Server 2014 , if you try to upgrade to on RDS for SQL Server 2022, this will fail as SSAS is not supported in on RDS for SQL Server 2022.
 >
->If you have SSRS DB option enabled on the source RDS,make sure to provide permission on the SSRS Secrets's resource policy to the new Option Group name, that you will pass during the script execution (example : SQL-RDS-2022-OG) in Secrets manager. Only then SSRS copy will be successful. For more information, refer to https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.SQLServer.Options.SSRS.html>
+>If you have SSRS DB option enabled on the source RDS,make sure to provide permission on the SSRS Secrets's resource policy to the new Option Group name, that you will pass during the script execution (example : SQL-RDS-2022-OG) in Secrets manager. Only then SSRS copy will be successful. For more information, refer to [Support for SQL Server Reporting Services in Amazon RDS for SQL Server](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.SQLServer.Options.SSRS.html)
 >
 >If you are running on SQL Server 2014 with MultiAZ  and trying to upgrade to SQL Server 2022 this will fail . As per upgrade path you need to either convert Multi AZ to SingleAZ first or upgrade to intermediate verison before upgrading to 2022. MultiAZ to SingleAZ conversion is not handled by this tool. Once you manually convert them you can rerun this tool.
 >
