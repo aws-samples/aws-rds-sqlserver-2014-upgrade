@@ -28,7 +28,7 @@ You can change the compatibility level of a database by using the ALTER DATABASE
 
 
 # Prerequisites
-- AWS CLI latest version
+- AWS CLI V2 version
 - Python latest version
 - Source SQL RDS Instance to upgrade
 

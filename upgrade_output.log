@@ -1,196 +1,126 @@
 Welcome to RDSUpgrade Tool
 
-2024-04-30 20:21:25
-                                                                                     AWS SQL RDS INPLACE-UPGRADE                                                                                     
-RDS Instance identifier database-1
+2024-05-29 11:01:18
+                                                                  AWS SQL RDS INPLACE-UPGRADE                                                                  
+RDS Instance identifier database-4
 RDS Instance AWS Region us-east-2
-RDS Instance target parameter group name default
-RDS Instance target parameter group family sqlserver-se-15.0
-RDS Instance target option group name default
+RDS Instance target parameter group name newpg
+RDS Instance target option group name newog
 RDS Instance target engine version 15.00.4345.5.v1
+Null Value validation completed. None of the parameters are Null. Proceeding further
+RDS Name and region validation completed. Proceeding further
 
 Source Engine Major version: 
 13
 
-Tareget Engine Major Version MAZ:15
+Target Engine Major Version MAZ:15
 
 Target Engine Name: sqlserver-se
+
+Target parameter group family: sqlserver-se-15.0
 RDS MultiAZ: false
 Listener  endpoint: null
-Tareget Major Version 15.00
+Tareget Major Version 15
 Getting the source parameter group name from RDS instance
 sql-stand-16
-2024-04-30 20:22:00
+2024-05-29 11:02:44
 Getting the source option group name from RDS instance
-sql-stand-16
-2024-04-30 20:22:03
-2024-04-30 20:22:03
-Custom ParameterGroup found on the source. But Default parametergroup requested for upgrade. Continuing with Default paramtergroup.
-2024-04-30 20:22:03
-Custom OptionGroup found on the source. But Default OptionGroup requested for upgrade. Continuing with Default OptionGroup.
-Performing In Place upgrade now
-2024-04-30 20:22:03
+testing-new
+2024-05-29 11:02:47
+Custom ParameterGroup found on the source. Custom parametergroup requested for upgrade. Continuing with Custom paramtergroup.
+Creating new parameter group newpg for target version
+create_db_pg2 254
+DB Parameter Group already exists. Do you want to proceed with this Parameter group or Exit now.  Select (y/n):
+2024-05-29 11:03:20
+Selecting only modified parameters from  the source
+Copying the modified parameters to the target
+modify_db_pg2 0
+2024-05-29 11:03:33
+Default OptionGroup testing-new found on the source. But Custom Optiongroup requested for upgrade. Continuing with Custom Optiongroup.
+Creating new Option group newog for target version
+create_db_og2 254
+DB Option Group already exists. Do you want to proceed with this Option group or Exit now.  Select (y/n):
+2024-05-29 11:04:43
+Copying the options from the source option group to the target
+run_python2 0
 {
-    "DBInstance": {
-        "DBInstanceIdentifier": "database-1",
-        "DBInstanceClass": "db.m5.large",
-        "Engine": "sqlserver-se",
-        "DBInstanceStatus": "available",
-        "MasterUsername": "admin",
-        "Endpoint": {
-            "Address": "database-1.cvgupdj47zsh.us-east-2.rds.amazonaws.com",
-            "Port": 1433,
-            "HostedZoneId": "Z2XHWR1WZ565X2"
-        },
-        "AllocatedStorage": 200,
-        "InstanceCreateTime": "2024-04-21T13:09:44.771000+00:00",
-        "PreferredBackupWindow": "04:10-04:40",
-        "BackupRetentionPeriod": 7,
-        "DBSecurityGroups": [],
-        "VpcSecurityGroups": [
+    "OptionGroup": {
+        "OptionGroupName": "newog",
+        "OptionGroupDescription": "SQL RDS Uograde optionGroup",
+        "EngineName": "sqlserver-se",
+        "MajorEngineVersion": "15.00",
+        "Options": [
             {
-                "VpcSecurityGroupId": "sg-0cbb5725c25664608",
-                "Status": "active"
-            },
-            {
-                "VpcSecurityGroupId": "sg-0971ecb45de060a75",
-                "Status": "active"
+                "OptionName": "SQLSERVER_BACKUP_RESTORE",
+                "OptionDescription": "SQLServer Database Level Customer Backups and Restores",
+                "Persistent": false,
+                "Permanent": false,
+                "OptionSettings": [
+                    {
+                        "Name": "IAM_ROLE_ARN",
+                        "Value": "arn:aws:iam::153916273869:role/rdsupgradetesting",
+                        "Description": "Specifies the IAM role ARN used by RDS to backup and restore to and from customer's S3 bucket(s)",
+                        "ApplyType": "DYNAMIC",
+                        "DataType": "STRING",
+                        "IsModifiable": true,
+                        "IsCollection": false
+                    }
+                ],
+                "DBSecurityGroupMemberships": [],
+                "VpcSecurityGroupMemberships": []
             }
         ],
-        "DBParameterGroups": [
-            {
-                "DBParameterGroupName": "sql-stand-16",
-                "ParameterApplyStatus": "in-sync"
-            }
-        ],
-        "AvailabilityZone": "us-east-2a",
-        "DBSubnetGroup": {
-            "DBSubnetGroupName": "chc-postg-14x",
-            "DBSubnetGroupDescription": "chc-postg-14x",
-            "VpcId": "vpc-0ecdff1c4abd7592b",
-            "SubnetGroupStatus": "Complete",
-            "Subnets": [
-                {
-                    "SubnetIdentifier": "subnet-0af0742cb189961cc",
-                    "SubnetAvailabilityZone": {
-                        "Name": "us-east-2c"
-                    },
-                    "SubnetOutpost": {},
-                    "SubnetStatus": "Active"
-                },
-                {
-                    "SubnetIdentifier": "subnet-02d5a8fe9371d8ad2",
-                    "SubnetAvailabilityZone": {
-                        "Name": "us-east-2a"
-                    },
-                    "SubnetOutpost": {},
-                    "SubnetStatus": "Active"
-                },
-                {
-                    "SubnetIdentifier": "subnet-098ed3616c40df3f9",
-                    "SubnetAvailabilityZone": {
-                        "Name": "us-east-2b"
-                    },
-                    "SubnetOutpost": {},
-                    "SubnetStatus": "Active"
-                }
-            ]
-        },
-        "PreferredMaintenanceWindow": "fri:06:08-fri:06:38",
-        "PendingModifiedValues": {
-            "EngineVersion": "15.00.4345.5.v1"
-        },
-        "LatestRestorableTime": "2024-05-01T00:17:01+00:00",
-        "MultiAZ": false,
-        "EngineVersion": "13.00.6300.2.v1",
-        "AutoMinorVersionUpgrade": false,
-        "ReadReplicaDBInstanceIdentifiers": [],
-        "LicenseModel": "license-included",
-        "Iops": 3000,
-        "OptionGroupMemberships": [
-            {
-                "OptionGroupName": "default:sqlserver-se-15-00",
-                "Status": "pending-apply"
-            },
-            {
-                "OptionGroupName": "sql-stand-16",
-                "Status": "pending-removal"
-            }
-        ],
-        "CharacterSetName": "SQL_Latin1_General_CP1_CI_AS",
-        "PubliclyAccessible": false,
-        "StorageType": "gp3",
-        "DbInstancePort": 0,
-        "StorageEncrypted": true,
-        "KmsKeyId": "arn:aws:kms:us-east-2:153916273869:key/3d0da788-3eb8-4fe5-9165-921cda0283c9",
-        "DbiResourceId": "db-HOI5SI43NJYDQAZFBTZMPJUAB4",
-        "CACertificateIdentifier": "rds-ca-rsa2048-g1",
-        "DomainMemberships": [
-            {
-                "Domain": "d-9a677082ec",
-                "Status": "joined",
-                "FQDN": "upgrade.com",
-                "IAMRoleName": "rds-directoryservice-access-role"
-            }
-        ],
-        "CopyTagsToSnapshot": true,
-        "MonitoringInterval": 60,
-        "EnhancedMonitoringResourceArn": "arn:aws:logs:us-east-2:153916273869:log-group:RDSOSMetrics:log-stream:db-HOI5SI43NJYDQAZFBTZMPJUAB4",
-        "MonitoringRoleArn": "arn:aws:iam::153916273869:role/rds-monitoring-role",
-        "DBInstanceArn": "arn:aws:rds:us-east-2:153916273869:db:database-1",
-        "IAMDatabaseAuthenticationEnabled": false,
-        "PerformanceInsightsEnabled": true,
-        "PerformanceInsightsKMSKeyId": "arn:aws:kms:us-east-2:153916273869:key/3d0da788-3eb8-4fe5-9165-921cda0283c9",
-        "PerformanceInsightsRetentionPeriod": 7,
-        "EnabledCloudwatchLogsExports": [
-            "agent",
-            "error"
-        ],
-        "DeletionProtection": false,
-        "AssociatedRoles": [],
-        "MaxAllocatedStorage": 1000,
-        "TagList": [],
-        "CustomerOwnedIpEnabled": false,
-        "BackupTarget": "region",
-        "NetworkType": "IPV4",
-        "StorageThroughput": 125,
-        "CertificateDetails": {
-            "CAIdentifier": "rds-ca-rsa2048-g1",
-            "ValidTill": "2027-04-21T13:07:15+00:00"
-        },
-        "DedicatedLogVolume": false
+        "AllowsVpcAndNonVpcInstanceMemberships": false,
+        "OptionGroupArn": "arn:aws:rds:us-east-2:153916273869:og:newog"
     }
 }
+add_otion2 0
+2024-05-29 11:04:55
+Performing In Place upgrade now
+2024-05-29 11:04:55
+Currently in custom target parameter and custom option group loop 
+modify_db_inst3 0
 Upgrade is in progress . Please wait
-2024-04-30 20:23:41
+2024-05-29 11:06:36
 Upgrade is in progress . Please wait
-2024-04-30 20:25:14
+2024-05-29 11:08:09
 Upgrade is in progress . Please wait
-2024-04-30 20:26:46
+2024-05-29 11:09:42
 Upgrade is in progress . Please wait
-2024-04-30 20:28:19
+2024-05-29 11:11:15
 Upgrade is in progress . Please wait
-2024-04-30 20:29:51
+2024-05-29 11:12:48
 Upgrade is in progress . Please wait
-2024-04-30 20:31:24
+2024-05-29 11:14:20
 Upgrade is in progress . Please wait
-2024-04-30 20:32:57
+2024-05-29 11:15:53
 Upgrade is in progress . Please wait
-2024-04-30 20:34:29
+2024-05-29 11:17:27
 Upgrade is in progress . Please wait
-2024-04-30 20:36:02
+2024-05-29 11:19:00
 Upgrade is in progress . Please wait
-2024-04-30 20:37:34
+2024-05-29 11:20:33
 Upgrade is in progress . Please wait
-2024-04-30 20:50:41
+2024-05-29 11:22:06
 Upgrade is in progress . Please wait
-2024-04-30 20:52:15
+2024-05-29 11:23:39
+Upgrade is in progress . Please wait
+2024-05-29 11:25:13
+Upgrade is in progress . Please wait
+2024-05-29 11:26:46
+Upgrade is in progress . Please wait
+2024-05-29 11:28:19
+Upgrade is in progress . Please wait
+2024-05-29 11:29:52
+Upgrade is in progress . Please wait
+2024-05-29 11:31:25
 Rebooting RDS instance
+modify_db_inst2 0
 Reboot is in progress . Please wait
-2024-04-30 20:54:25
+2024-05-29 11:33:40
 RDS instance's SQL Server Engine after upgrade
 [
- "15.00.4345.5.v1"
- ]
+    "15.00.4345.5.v1"
+]
 Execution time in HH MM SS
-0 34 6
+0 33 28
