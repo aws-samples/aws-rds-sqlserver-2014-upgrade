@@ -18,57 +18,57 @@ echo ---------------------------------------------------------------------------
 
 echo "AWS SQL RDS INPLACE-UPGRADE" | sed  -e :a -e "s/^.\{1,$(tput cols)\}$/ & /;ta" | tr -d '\n' >>upgrade_output.log 
 
-echo "Enter Source RDS Instance identifier"
+echo "Enter source RDS instance identifier"
 read source_db_instance_identifier
-echo -e "\nRDS Instance identifier $source_db_instance_identifier">>upgrade_output.log 
+echo -e "\nRDS instance identifier $source_db_instance_identifier">>upgrade_output.log 
 
 
-echo "Enter Source RDS Instance AWS Region"
+echo "Enter source RDS instance AWS Region"
 read region
-echo -e "RDS Instance AWS Region $region">>upgrade_output.log
+echo -e "RDS instance AWS Region $region">>upgrade_output.log
 
-echo "Enter RDS Instance target parameter group name to use custom parameter group . To use default , enter 'default'"
+echo "Enter RDS instance target parameter group name to use as the custom parameter group . To use the default parameter group, enter 'default'"
 read target_db_parameter_group_name
-echo -e "RDS Instance target parameter group name $target_db_parameter_group_name">>upgrade_output.log
+echo -e "RDS instance target parameter group name $target_db_parameter_group_name">>upgrade_output.log
 
-echo "Enter RDS Instance target option group name to use custom option group. To use default , enter 'default'"
+echo "Enter RDS instance target option group name to use as the custom option group. To use default the option group, enter 'default'"
 read target_option_group_name
-echo -e "RDS Instance target option group name $target_option_group_name">>upgrade_output.log
+echo -e "RDS instance target option group name $target_option_group_name">>upgrade_output.log
 
 
-echo "Enter RDS Instance target engine version(Example:15.00.4345.5.v1)"
+echo "Enter RDS instance target engine version (Example:15.00.4345.5.v1)"
 read target_engine_version
-echo -e "RDS Instance target engine version $target_engine_version">>upgrade_output.log
+echo -e "RDS instance target engine version $target_engine_version">>upgrade_output.log
 
 
 if [ -z "$source_db_instance_identifier" ]; then   
-    echo "Source RDS Instance identifier is NULL. Re-run the process . Exiting.">>upgrade_output.log
-    echo "Source RDS Instance identifier is NULL. Re-run the process . Exiting."
+    echo "Source RDS instance identifier is NULL. Re-run the process. Exiting the process.">>upgrade_output.log
+    echo "Source RDS instance identifier is NULL. Re-run the process. Exiting the process."
     exit
     elif [ -z "$region" ]; then   
-        echo "region is NULL. Re-run the process . Exiting.">>upgrade_output.log
-        echo "region is NULL. Re-run the process . Exiting."
+        echo "region is NULL. Re-run the process . Exiting the process.">>upgrade_output.log
+        echo "region is NULL. Re-run the process . Exiting the process."
         exit
     elif [ -z "$target_db_parameter_group_name" ]; then   
-        echo "RDS Instance target parameter group name is NULL. Re-run the process . Exiting.">>upgrade_output.log
-        echo "RDS Instance target parameter group name is NULL. Re-run the process . Exiting."
+        echo "RDS instance target parameter group name is NULL. Re-run the process . Exiting the process.">>upgrade_output.log
+        echo "RDS instance target parameter group name is NULL. Re-run the process . Exiting the process."
         exit
     elif [ -z "$target_option_group_name" ]; then   
-        echo "RDS Instance target option group name is NULL. Re-run the process . Exiting.">>upgrade_output.log
-        echo "RDS Instance target option group name is NULL. Re-run the process . Exiting."
+        echo "RDS instance target option group name is NULL. Re-run the process . Exiting the process.">>upgrade_output.log
+        echo "RDS instance target option group name is NULL. Re-run the process . Exiting the process."
         exit
     elif [ -z "$target_engine_version" ]; then   
-        echo "RDS Instance target engine version is NULL. Re-run the process . Exiting.">>upgrade_output.log
-        echo "RDS Instance target engine version is NULL. Re-run the process . Exiting."
+        echo "RDS instance target engine version is NULL. Re-run the process . Exiting the process.">>upgrade_output.log
+        echo "RDS instance target engine version is NULL. Re-run the process . Exiting the process."
         exit
     else 
-     echo "Null Value validation completed. None of the parameters are Null. Proceeding further">>upgrade_output.log
-     echo "Null Value validation completed. None of the parameters are Null. Proceeding further"
+     echo "Null Value validation completed. None of the parameters are Null. Proceeding further.">>upgrade_output.log
+     echo "Null Value validation completed. None of the parameters are Null. Proceeding further."
 fi
 
 
 
-echo "Kindly monitor upgrade_output.log for more verbose logging"
+echo "Monitor upgrade_output.log for more verbose logging"
 
 
 rds_name_validation=$(aws rds describe-db-instances --db-instance-identifier $source_db_instance_identifier --region $region --query 'DBInstances[*].DBInstanceIdentifier|[0]')
@@ -76,11 +76,11 @@ rds_name_validation=`sed -e 's/^"//' -e 's/"$//' <<<"$rds_name_validation"`
 
 
 if [[ (($rds_name_validation =~ ($source_db_instance_identifier))) ]]; then   
-    echo "RDS Name and region validation completed. Proceeding further">>upgrade_output.log
-    echo "RDS Name and region validation completed. Proceeding further"
+    echo "RDS instance name and Region validation complete. Proceeding further.">>upgrade_output.log
+    echo "RDS instance name and Region validation complete. Proceeding further."
     else
-    echo "RDS Name or region invalid. Please check the error, exiting ...!">>upgrade_output.log
-    echo "RDS Name or region invalid. Please check the error, exiting ...!"
+    echo "RDS instance name or Region invalid. Exiting the process.">>upgrade_output.log
+    echo "RDS instance name or Region invalid. Exiting the process."
     exit
 fi 
 
@@ -119,15 +119,15 @@ multiaz=`aws rds describe-db-instances --db-instance-identifier $source_db_insta
 echo "RDS MultiAZ: $multiaz">>upgrade_output.log
 lis_endpoint=`aws rds describe-db-instances --db-instance-identifier $source_db_instance_identifier --region $region --query 'DBInstances[*].ListenerEndpoint.Address|[0]'|sed -r 's/"//g'`
 echo "Listener  endpoint: $lis_endpoint">>upgrade_output.log
-echo "Tareget Major Version $target_major_engine_version_maz">>upgrade_output.log
+echo "Target Major Version $target_major_engine_version_maz">>upgrade_output.log
 
 
 if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engine_version_maz -eq 16) ]]; then   
-    echo "Target Major Engine version  is $target_major_engine_version ,SQL Server 2022. As per the upgrade path to SQL Server 2022, MultiAZ should be converted to SingleAZ first. Please convert that in the console and rerun this tool"
-    echo "Target Major Engine version  is $target_major_engine_version ,SQL Server 2022. As per the upgrade path to SQL Server 2022, MultiAZ should be converted to SingleAZ first. Please convert that in the console and rerun this tool">>upgrade_output.log
+    echo "Target Major Engine version  is $target_major_engine_version ,SQL Server 2022. As per the upgrade path to SQL Server 2022, MultiAZ should be converted to SingleAZ first. Convert that in the console and rerun this tool"
+    echo "Target Major Engine version  is $target_major_engine_version ,SQL Server 2022. As per the upgrade path to SQL Server 2022, MultiAZ should be converted to SingleAZ first. Convert that in the console and rerun this tool">>upgrade_output.log
     break    
     else
-    echo "Proceeding further"
+    echo "Proceeding further."
     ##############################################################################################################################################################################################################################################
     ##Parameter and Option Group handling
     ##############################################################################################################################################################################################################################################
@@ -155,31 +155,31 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
 
 
     if [[ (($source_db_parameter_group_name =~ $default_pg) && ($target_db_parameter_group_name =~ (default))) ]]; then
-        echo 'Default ParameterGroup found on the source. Default parametergroup requested for upgrade. Continuing with Default paramtergroup.'>>upgrade_output.log
+        echo 'Default parameter group found on the source. Default parameter group requested for upgrade. Continuing with Default paramtergroup.'>>upgrade_output.log
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
         elif [[ (("$source_db_parameter_group_name" != "$default_pg")) && ($target_db_parameter_group_name =~ (default)) ]]; then
             date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
-            echo 'Custom ParameterGroup found on the source. But Default parametergroup requested for upgrade. Continuing with Default paramtergroup.'>>upgrade_output.log 
+            echo 'Custom parameter group found on the source. But Default parameter group requested for upgrade. Continuing with Default paramtergroup.'>>upgrade_output.log 
         elif [[ (($source_db_parameter_group_name =~ $default_pg) && ("$target_db_parameter_group_name" != "default")) ]]; then
-            echo "Default ParameterGroup found on the source. But Custom parametergroup requested for upgrade. Continuing with Custom paramtergroup.">>upgrade_output.log
+            echo "Default parameter group found on the source. But Custom parameter group requested for upgrade. Continuing with Custom paramtergroup.">>upgrade_output.log
             echo "Creating new parameter group $target_db_parameter_group_name for target version">>upgrade_output.log              
-            aws rds create-db-parameter-group  --db-parameter-group-name $target_db_parameter_group_name  --region $region --db-parameter-group-family $target_db_parameter_group_family --description 'SQL RDS Upgrade ParameterGroup'>>upgrade_output.log
+            aws rds create-db-parameter-group  --db-parameter-group-name $target_db_parameter_group_name  --region $region --db-parameter-group-family $target_db_parameter_group_family --description 'SQL RDS Upgrade parameter group'>>upgrade_output.log
             create_db_pg1=$?
             echo "create_db_pg1 $create_db_pg1">>upgrade_output.log
             if [ $create_db_pg1 -eq 0 ]; then
-                echo "DB Parameter Group successfully created. Moving forward"
-                echo "DB Parameter Group successfully created. Moving forward">>upgrade_output.log
+                echo "DB parameter group successfully created. Moving forward"
+                echo "DB parameter group successfully created. Moving forward">>upgrade_output.log
                 elif [ $create_db_pg1 -eq 254 ]; then
-                echo -e "DB Parameter Group already exists. Do you want to proceed with this Parameter group or Exit now.  Select (y/n):">>upgrade_output.log
-                read -p "DB Parameter Group already exists. Do you want to proceed with this Parameter group or Exit now. Select (y/n):" pg_decision
+                echo -e "DB parameter group already exists. Do you want to proceed with this parameter group or Exit now.  Select (y/n):">>upgrade_output.log
+                read -p "DB parameter group already exists. Do you want to proceed with this parameter group or Exit now. Select (y/n):" pg_decision
                     if [ "$pg_decision" == "y" ] || [ "$pg_decision" == "Y" ]; then
-                    echo "Proceeding with this Parameter group"
+                    echo "Proceeding with this parameter group"
                     else
-                    echo "Exiting now"
+                    echo "Exiting the process now"
                     exit
                     fi
                 else
-                    echo "DB Parameter Group creation failed. Exiting"
+                    echo "DB parameter group creation failed. Exiting the process"
                     exit
 
             fi             
@@ -191,31 +191,31 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
             modify_db_pg1=$?
             echo "modify_db_pg1 $modify_db_pg1">>upgrade_output.log
             if [ $modify_db_pg1 -ne 0 ]; then
-            echo "DB Parameter Group copy paramter failed. Exiting">>upgrade_output.log
-            echo "DB Parameter Group copy paramter failed. Exiting"
+            echo "DB parameter group copy paramter failed. Exiting the process">>upgrade_output.log
+            echo "DB parameter group copy paramter failed. Exiting the process"
             exit
             fi
             date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
         else 
-            echo "Custom ParameterGroup found on the source. Custom parametergroup requested for upgrade. Continuing with Custom paramtergroup.">>upgrade_output.log
+            echo "Custom parameter group found on the source. Custom parameter group requested for upgrade. Continuing with Custom paramter group.">>upgrade_output.log
             echo "Creating new parameter group $target_db_parameter_group_name for target version">>upgrade_output.log
-            aws rds create-db-parameter-group  --db-parameter-group-name $target_db_parameter_group_name  --region $region --db-parameter-group-family $target_db_parameter_group_family --description 'SQL RDS Upgrade ParameterGroup'>>upgrade_output.log
+            aws rds create-db-parameter-group  --db-parameter-group-name $target_db_parameter_group_name  --region $region --db-parameter-group-family $target_db_parameter_group_family --description 'SQL RDS Upgrade Parameter Group'>>upgrade_output.log
             create_db_pg2=$?
             echo "create_db_pg2 $create_db_pg2">>upgrade_output.log
             if [ $create_db_pg2 -eq 0 ]; then
-                echo "DB Parameter Group successfully created. Moving forward"
-                echo "DB Parameter Group successfully created. Moving forward">>upgrade_output.log
+                echo "DB parameter group successfully created. Proceeding further."
+                echo "DB parameter group successfully created. Proceeding further.">>upgrade_output.log
                 elif [ $create_db_pg2 -eq 254 ]; then
-                echo -e "DB Parameter Group already exists. Do you want to proceed with this Parameter group or Exit now.  Select (y/n):">>upgrade_output.log
-                read -p "DB Parameter Group already exists. Do you want to proceed with this Parameter group or Exit now. Select (y/n):" pg_decision
+                echo -e "DB parameter group already exists. Do you want to proceed with this Parameter group or Exit now.  Select (y/n):">>upgrade_output.log
+                read -p "DB parameter group already exists. Do you want to proceed with this Parameter group or Exit now. Select (y/n):" pg_decision
                     if [ "$pg_decision" == "y" ] || [ "$pg_decision" == "Y" ]; then
                     echo "Proceeding with this Parameter group"
                     else
-                    echo "Exiting now"
+                    echo "Exiting the process now"
                     exit
                     fi
                 else
-                    echo "DB Parameter Group creation failed. Exiting"
+                    echo "DB parameter group creation failed. Exiting the process"
                     exit
             fi
             date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
@@ -226,8 +226,8 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
             modify_db_pg2=$?
             echo "modify_db_pg2 $modify_db_pg2">>upgrade_output.log
             if [ $modify_db_pg2 -ne 0 ]; then
-            echo "DB Parameter Group modification failed. Exiting"
-            echo "DB Parameter Group modification failed. Exiting">>upgrade_output.log
+            echo "DB parameter group modification failed. Exiting the process."
+            echo "DB parameter group modification failed. Exiting the process.">>upgrade_output.log
             exit
             fi
             date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log        
@@ -237,15 +237,15 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
     default_og='(default.)'
 
     if [[ (($source_option_group_name =~ $default_og) && ($target_option_group_name =~ (default))) ]]; then
-        echo 'Default OptionGroup found on the source. Default OptionGroup requested for upgrade.Continuing with Default OptionGroup.'>>upgrade_output.log
+        echo 'Default option group found on the source. Default option group requested for upgrade.Continuing with Default option group.'>>upgrade_output.log
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
         elif [[ (("$source_option_group_name" != "$default_og")) && ($target_option_group_name =~ (default)) ]]; then
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
-        echo 'Custom OptionGroup found on the source. But Default OptionGroup requested for upgrade. Continuing with Default OptionGroup.'>>upgrade_output.log 
+        echo 'Custom option group found on the source. But Default option group requested for upgrade. Continuing with Default option group.'>>upgrade_output.log 
         elif [[ (($source_option_group_name =~ $default_og) && ("$target_option_group_name" != "default")) ]]; then
-        echo "Default OptionGroup $source_db_option_group_name found on the source.But Custom Optiongroup requested for upgrade. Continuing with Custom Optiongroup.">>upgrade_output.log
+        echo "Default option group $source_db_option_group_name found on the source.But Custom option group requested for upgrade. Continuing with Custom option group.">>upgrade_output.log
         echo "Creating new Option group $target_option_group_name for target version">>upgrade_output.log
-        aws rds create-option-group  --option-group-name $target_option_group_name  --region $region  --engine-name $target_engine_name --major-engine-version $target_major_engine_version --option-group-description 'SQL RDS Upgrade optionGroup'>>upgrade_output.log
+        aws rds create-option-group  --option-group-name $target_option_group_name  --region $region  --engine-name $target_engine_name --major-engine-version $target_major_engine_version --option-group-description 'SQL RDS Upgrade option group'>>upgrade_output.log
         create_db_og1=$?
         echo "create_db_og1 $create_db_og1">>upgrade_output.log
         if [ $create_db_og1 -eq 0 ]; then
@@ -257,24 +257,24 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
                 if [ "$og_decision" == "y" ] || [ "$og_decision" == "Y" ]; then
                 echo "Proceeding with this Option group"
                 else
-                echo "Exiting"          
+                echo "Exiting the process."          
                 exit
                 fi
             else
-                echo "DB Option Group creation failed. Exiting"
+                echo "DB Option Group creation failed. Exiting the process."
                 exit
         fi
 
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log  
         echo "Copying the options from the source option group to the target">>upgrade_output.log
-        echo "Please ignore this message if you don't have SSRS option enabled in your source RDS but if you do, make sure to provide permission for the new option group in SSRS Secrets's resource policy.Look into Readme for more details"
+        echo "Ignore this message if you don't have SSRS option enabled in your source RDS instance. If you do, provide permission for the new option group in SSRS Secrets resource policy. Look at the Readme for more details."
         aws rds describe-option-groups --option-group-name $source_db_option_group_name --region $region  --query "OptionGroupsList[*].Options">og_input.json
         py db_options.py
         run_python1=$?
         echo "run_python1 $run_python1">>upgrade_output.log
         if [ $run_python1 -ne 0 ]; then
-            echo "Python script to populate Option Group parameter failed. Exiting"
-            echo "Python script to populate Option Group parameter failed. Exiting">>upgrade_output.log           
+            echo "Python script to populate Option Group parameter failed. Exiting the process."
+            echo "Python script to populate Option Group parameter failed. Exiting the process.">>upgrade_output.log           
         fi
         aws rds add-option-to-option-group --option-group-name $target_option_group_name --region $region --options file://og_output.json>>upgrade_output.log
         add_otion1=$?
@@ -286,9 +286,9 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
         fi
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
         else
-        echo "Default OptionGroup $source_db_option_group_name found on the source. But Custom Optiongroup requested for upgrade. Continuing with Custom Optiongroup.">>upgrade_output.log
+        echo "Default option group $source_db_option_group_name found on the source. But Custom option group requested for upgrade. Continuing with Custom option group.">>upgrade_output.log
         echo "Creating new Option group $target_option_group_name for target version">>upgrade_output.log
-        aws rds create-option-group  --option-group-name $target_option_group_name  --region $region  --engine-name $target_engine_name --major-engine-version $target_major_engine_version --option-group-description 'SQL RDS Upgrade optionGroup'>>upgrade_output.log
+        aws rds create-option-group  --option-group-name $target_option_group_name  --region $region  --engine-name $target_engine_name --major-engine-version $target_major_engine_version --option-group-description 'SQL RDS Upgrade option group'>>upgrade_output.log
         create_db_og2=$?
         echo "create_db_og2 $create_db_og2">>upgrade_output.log
         if [ $create_db_og2 -eq 0 ]; then
@@ -300,23 +300,23 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
                 if [ "$og_decision" == "y" ] || [ "$og_decision" == "Y" ]; then
                 echo "Proceeding with this Option group"
                 else
-                echo "Exiting"          
+                echo "Exiting the process."          
                 exit
                 fi
             else
-                echo "DB Option Group creation failed. Exiting"
+                echo "DB Option Group creation failed. Exiting the process."
                 exit
         fi
         date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log  
         echo "Copying the options from the source option group to the target">>upgrade_output.log
-        echo "Please ignore this message if you don't have SSRS option enabled in your source RDS but if you do, make sure to provide permission for the new option group in SSRS Secrets's resource policy.Look into Readme for more details"
+        echo "Ignore this message if you don't have SSRS option enabled in your source RDS instance. If you do, provide permission for the new option group in SSRS Secrets resource policy. Look at the Readme for more details."
         aws rds describe-option-groups --option-group-name $source_db_option_group_name --region $region  --query "OptionGroupsList[*].Options">og_input.json
         py db_options.py
         run_python2=$?
         echo "run_python2 $run_python2">>upgrade_output.log
         if [ $run_python2 -ne 0 ]; then
-            echo "DB parameter failed to create exiting"
-            echo "DB parameter failed to create exiting">>upgrade_output.log
+            echo "DB parameter failed to create Exiting the process."
+            echo "DB parameter failed to create Exiting the process.">>upgrade_output.log
             exit
         fi
         aws rds add-option-to-option-group --option-group-name $target_option_group_name --region $region --options file://og_output.json>>upgrade_output.log
@@ -337,7 +337,7 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
     ##############################################################################################################################################################################################################################################
    
 
-    echo "Performing In Place upgrade now">>upgrade_output.log
+    echo "Performing in-place upgrade now">>upgrade_output.log
     date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
     while true
     do  
@@ -347,8 +347,8 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
         if [ ${dbstatus} == "available" ];then
                 break;
             else
-                echo "Pease wait DB is not in available state">>upgrade_output.log
-                echo "Pease wait DB is not in available state"
+                echo "DB is not in available state">>upgrade_output.log
+                echo "DB is not in available state"
                 date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
                 sleep 30
         fi
@@ -364,11 +364,11 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
         modify_db_inst1=$?
         echo "modify_db_inst1 $modify_db_inst1">>upgrade_output.log
         if [ $modify_db_inst1 -ne 0 ]; then
-            echo "Upgrade DB instance failed. Exiting"
-            echo "Upgrade DB instance failed. Exiting">>upgrade_output.log
+            echo "Upgrade DB instance failed. Exiting the process."
+            echo "Upgrade DB instance failed. Exiting the process.">>upgrade_output.log
             exit
         fi
-        echo "Upgrade initiated . Please wait"
+        echo "Upgrade is in progress."
         while true;
         do
             sleep 60
@@ -377,8 +377,8 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
             if [ ${dbstatus} == "available" ];then
                 break;
             else
-                echo "Upgrade is in progress . Please wait">>upgrade_output.log
-                echo "Upgrade is in progress . Please wait"
+                echo "Upgrade is in progress.">>upgrade_output.log
+                echo "Upgrade is in progress."
                 date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
                 sleep 30
             fi
@@ -392,11 +392,11 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
         modify_db_inst2=$?
         echo "modify_db_inst2 $modify_db_inst2">>upgrade_output.log
         if [ $modify_db_inst2 -ne 0 ]; then
-            echo "Upgrade DB instance failed. Exiting"
-            echo "Upgrade DB instance failed. Exiting">>upgrade_output.log
+            echo "Upgrade DB instance failed. Exiting the process."
+            echo "Upgrade DB instance failed. Exiting the process.">>upgrade_output.log
             exit
         fi
-        echo "Upgrade initiated . Please wait"
+        echo "Upgrade is in progress."
         while true;
         do
             sleep 60
@@ -405,8 +405,8 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
             if [ ${dbstatus} == "available" ];then
                 break;
             else
-                echo "Upgrade is in progress . Please wait">>upgrade_output.log
-                echo "Upgrade is in progress . Please wait"
+                echo "Upgrade is in progress.">>upgrade_output.log
+                echo "Upgrade is in progress."
                 date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
                 sleep 30
             fi
@@ -415,7 +415,7 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
         target_db_parameter_group_name=$build_default_pg$target_db_parameter_group_family        
         echo "Currently in default target parameter and custom option group loop ">>upgrade_output.log
         aws rds   modify-db-instance --db-instance-identifier $source_db_instance_identifier --region $region --engine-version $target_engine_version --db-parameter-group-name $target_db_parameter_group_name  --option-group-name $target_option_group_name --allow-major-version-upgrade --apply-immediately>>/dev/null
-        echo "Upgrade initiated . Please wait"
+        echo "Upgrade is in progress."
         while true;
         do
             sleep 60
@@ -424,8 +424,8 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
             if [ ${dbstatus} == "available" ];then
                 break;
             else
-                echo "Upgrade is in progress . Please wait">>upgrade_output.log
-                echo "Upgrade is in progress . Please wait"
+                echo "Upgrade is in progress.">>upgrade_output.log
+                echo "Upgrade is in progress."
                 date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
                 sleep 30
             fi
@@ -440,7 +440,7 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
             echo "Upgrade DB instance failed. Exiting">>upgrade_output.log
             exit
         fi        
-        echo "Upgrade initiated . Please wait"
+        echo "Upgrade is in progress."
         while true;
         do
             sleep 60
@@ -449,8 +449,8 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
             if [ ${dbstatus} == "available" ];then
                 break;
             else
-                echo "Upgrade is in progress . Please wait">>upgrade_output.log
-                echo "Upgrade is in progress . Please wait"
+                echo "Upgrade is in progress.">>upgrade_output.log
+                echo "Upgrade is in progress."
                 date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
                 sleep 30
             fi
@@ -462,11 +462,11 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
     modify_db_inst2=$?
     echo "modify_db_inst2 $modify_db_inst2">>upgrade_output.log
     if [ $modify_db_inst2 -ne 0 ]; then
-        echo "Reboot DB instance failed. Exiting"
-        echo "Reboot DB instance failed. Exiting">>upgrade_output.log
+        echo "Reboot DB instance failed. Exiting the process."
+        echo "Reboot DB instance failed. Exiting the process.">>upgrade_output.log
         exit
     fi
-    echo "Reboot initiated . Please wait"
+    echo "Reboot is in progress."
     while true;
     do
         sleep 30
@@ -475,8 +475,8 @@ if [[ ($lis_endpoint =~ (null)) && ($multiaz =~ ("true")) && ($target_major_engi
         if [ ${dbstatus} == "available" ];then
             break;
         else
-            echo "Reboot is in progress . Please wait">>upgrade_output.log
-            echo "Reboot is in progress . Please wait"
+            echo "Reboot is in progress.">>upgrade_output.log
+            echo "Reboot is in progress."
             date '+%Y-%m-%d %H:%M:%S'>>upgrade_output.log
             sleep 30
         fi

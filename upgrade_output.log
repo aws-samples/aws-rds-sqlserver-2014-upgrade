@@ -1,14 +1,14 @@
 Welcome to RDSUpgrade Tool
 
-2024-05-29 11:01:18
-                                                                  AWS SQL RDS INPLACE-UPGRADE                                                                  
-RDS Instance identifier database-4
-RDS Instance AWS Region us-east-2
-RDS Instance target parameter group name newpg
-RDS Instance target option group name newog
-RDS Instance target engine version 15.00.4345.5.v1
-Null Value validation completed. None of the parameters are Null. Proceeding further
-RDS Name and region validation completed. Proceeding further
+2024-05-31 12:06:20
+                                                                                                               AWS SQL RDS INPLACE-UPGRADE                                                                                                               
+RDS instance identifier database-5
+RDS instance AWS Region us-east-2
+RDS instance target parameter group name newpg
+RDS instance target option group name newog
+RDS instance target engine version 15.00.4345.5.v1
+Null Value validation completed. None of the parameters are Null. Proceeding further.
+RDS instance name and Region validation complete. Proceeding further.
 
 Source Engine Major version: 
 13
@@ -20,27 +20,27 @@ Target Engine Name: sqlserver-se
 Target parameter group family: sqlserver-se-15.0
 RDS MultiAZ: false
 Listener  endpoint: null
-Tareget Major Version 15
+Target Major Version 15
 Getting the source parameter group name from RDS instance
 sql-stand-16
-2024-05-29 11:02:44
+2024-05-31 12:07:04
 Getting the source option group name from RDS instance
 testing-new
-2024-05-29 11:02:47
-Custom ParameterGroup found on the source. Custom parametergroup requested for upgrade. Continuing with Custom paramtergroup.
+2024-05-31 12:07:07
+Custom parameter group found on the source. Custom parameter group requested for upgrade. Continuing with Custom paramter group.
 Creating new parameter group newpg for target version
 create_db_pg2 254
-DB Parameter Group already exists. Do you want to proceed with this Parameter group or Exit now.  Select (y/n):
-2024-05-29 11:03:20
+DB parameter group already exists. Do you want to proceed with this Parameter group or Exit now.  Select (y/n):
+2024-05-31 12:27:21
 Selecting only modified parameters from  the source
 Copying the modified parameters to the target
 modify_db_pg2 0
-2024-05-29 11:03:33
-Default OptionGroup testing-new found on the source. But Custom Optiongroup requested for upgrade. Continuing with Custom Optiongroup.
+2024-05-31 12:27:28
+Default option group testing-new found on the source. But Custom option group requested for upgrade. Continuing with Custom option group.
 Creating new Option group newog for target version
 create_db_og2 254
 DB Option Group already exists. Do you want to proceed with this Option group or Exit now.  Select (y/n):
-2024-05-29 11:04:43
+2024-05-31 12:27:33
 Copying the options from the source option group to the target
 run_python2 0
 {
@@ -71,56 +71,53 @@ run_python2 0
             }
         ],
         "AllowsVpcAndNonVpcInstanceMemberships": false,
+        "VpcId": "vpc-0ecdff1c4abd7592b",
         "OptionGroupArn": "arn:aws:rds:us-east-2:153916273869:og:newog"
     }
 }
 add_otion2 0
-2024-05-29 11:04:55
-Performing In Place upgrade now
-2024-05-29 11:04:55
+2024-05-31 12:27:39
+Performing in-place upgrade now
+2024-05-31 12:27:39
 Currently in custom target parameter and custom option group loop 
 modify_db_inst3 0
-Upgrade is in progress . Please wait
-2024-05-29 11:06:36
-Upgrade is in progress . Please wait
-2024-05-29 11:08:09
-Upgrade is in progress . Please wait
-2024-05-29 11:09:42
-Upgrade is in progress . Please wait
-2024-05-29 11:11:15
-Upgrade is in progress . Please wait
-2024-05-29 11:12:48
-Upgrade is in progress . Please wait
-2024-05-29 11:14:20
-Upgrade is in progress . Please wait
-2024-05-29 11:15:53
-Upgrade is in progress . Please wait
-2024-05-29 11:17:27
-Upgrade is in progress . Please wait
-2024-05-29 11:19:00
-Upgrade is in progress . Please wait
-2024-05-29 11:20:33
-Upgrade is in progress . Please wait
-2024-05-29 11:22:06
-Upgrade is in progress . Please wait
-2024-05-29 11:23:39
-Upgrade is in progress . Please wait
-2024-05-29 11:25:13
-Upgrade is in progress . Please wait
-2024-05-29 11:26:46
-Upgrade is in progress . Please wait
-2024-05-29 11:28:19
-Upgrade is in progress . Please wait
-2024-05-29 11:29:52
-Upgrade is in progress . Please wait
-2024-05-29 11:31:25
+Upgrade is in progress.
+2024-05-31 12:29:17
+Upgrade is in progress.
+2024-05-31 12:30:49
+Upgrade is in progress.
+2024-05-31 12:32:23
+Upgrade is in progress.
+2024-05-31 12:33:55
+Upgrade is in progress.
+2024-05-31 12:35:30
+Upgrade is in progress.
+2024-05-31 12:37:03
+Upgrade is in progress.
+2024-05-31 12:38:35
+Upgrade is in progress.
+2024-05-31 12:40:08
+Upgrade is in progress.
+2024-05-31 12:41:41
+Upgrade is in progress.
+2024-05-31 12:43:13
+Upgrade is in progress.
+2024-05-31 12:44:45
+Upgrade is in progress.
+2024-05-31 12:46:18
+Upgrade is in progress.
+2024-05-31 12:47:50
+Upgrade is in progress.
+2024-05-31 12:49:22
+Upgrade is in progress.
+2024-05-31 12:50:55
 Rebooting RDS instance
 modify_db_inst2 0
-Reboot is in progress . Please wait
-2024-05-29 11:33:40
+Reboot is in progress.
+2024-05-31 13:07:22
 RDS instance's SQL Server Engine after upgrade
 [
     "15.00.4345.5.v1"
 ]
 Execution time in HH MM SS
-0 33 28
+1 2 7
